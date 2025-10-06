@@ -1,0 +1,14 @@
+{
+    "Globals": {
+    },
+    "Profiles": {
+        "face_detector": {
+            "memory_pool": "./my_mpools/face_detector.mpool",
+            "options" : "--enable-epoch-controller -O3 --all-buffers-info --mvei --cache-maintenance --Oauto-sched --native-float --enable-virtual-mem-pools --Omax-ca-pipe 4 --Ocache-opt --Os"
+        },
+        "face_landmark": {
+            "memory_pool": "./my_mpools/face_landmark.mpool",
+            "options" : "--enable-epoch-controller -O3 --all-buffers-info --mvei --cache-maintenance --Oauto-sched --native-float --enable-virtual-mem-pools --Omax-ca-pipe 4 --Ocache-opt --Os"
+        }
+    }
+}

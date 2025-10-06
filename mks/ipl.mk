@@ -1,0 +1,8 @@
+IPL_REL_DIR := Lib/ipl
+
+C_SOURCES_IPL += $(IPL_REL_DIR)/Src/mve_resize.c
+
+C_INCLUDES_IPL += -I$(IPL_REL_DIR)/Inc
+
+C_SOURCES += $(C_SOURCES_IPL)
+C_INCLUDES += $(C_INCLUDES_IPL)

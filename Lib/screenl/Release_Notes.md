@@ -17,6 +17,11 @@ Screenl purpose is to abstract display for application. It currently supports LD
 
 ## Update history
 
+### V3.0.1 / January 2026
+
+- Add missing licence headers
+- Fix IAR warnings
+
 ### V3.0.0 / August 2025
 
 - align with new uvcl API

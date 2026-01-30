@@ -1,3 +1,20 @@
+/**
+ ******************************************************************************
+ * @file    scrl_lcd.c
+ * @author  MDG Application Team
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2024 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
+
 #include "scrl.h"
 
 #include <assert.h>
@@ -218,7 +235,6 @@ static int32_t LTDC_FillRectRgb888(uint32_t Instance, uint32_t Xpos, uint32_t Yp
   pel += (Ypos * layer_width * 3) + Xpos * 3;
   for (h = 0; h < Height; h++) {
     for (w = 0; w < Width; w++) {
-      /* FIXME */
       pel[3 * w + 0] = b;
       pel[3 * w + 1] = g;
       pel[3 * w + 2] = r;
@@ -246,7 +262,6 @@ static int32_t LTDC_FillRectArgb8888(uint32_t Instance, uint32_t Xpos, uint32_t 
   pel += (Ypos * layer_width * 4) + Xpos * 4;
   for (h = 0; h < Height; h++) {
     for (w = 0; w < Width; w++) {
-      /* FIXME */
       pel[4 * w + 0] = r;
       pel[4 * w + 1] = g;
       pel[4 * w + 2] = b;
@@ -364,7 +379,7 @@ static int32_t LTDC_SetLayer(uint32_t Instance, uint32_t LayerIndex)
 {
   int32_t res;
 
-  current_layer = LayerIndex;
+  current_layer = (SCRL_Layer) LayerIndex;
   res = BSP_LCD_SetActiveLayer(Instance, LayerIndex);
 
   /* Fix wrong BppFactor/PixelFormat decision when in flexible format */

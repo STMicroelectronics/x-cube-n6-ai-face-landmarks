@@ -23,8 +23,8 @@ rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(su
 # target
 ######################################
 TARGET = Project
- # Supported Options: VD66GY; IMX335; VD55G1
-SENSOR_LIST = IMX335 VD66GY VD55G1
+ # Supported Options: IMX335; VD66GY; VD55G1; VD1943; OV5640
+SENSOR_LIST = IMX335 VD66GY VD55G1 VD1943 OV5640
 
  # Supported Options: STM32N6570-DK; NUCLEO-N657X0-Q
 BOARD ?= STM32N6570-DK
@@ -35,6 +35,13 @@ BINARY_DIR = Binary
 define is_nucleo
 $(if $(filter $(BOARD),NUCLEO-N657X0-Q),1,0)
 endef
+
+ifdef APP_GIT_SHA1_STRING
+C_DEFS += -DAPP_GIT_SHA1_STRING=\"$(APP_GIT_SHA1_STRING)\"
+endif
+ifdef APP_VERSION_STRING
+C_DEFS += -DAPP_VERSION_STRING=\"$(APP_VERSION_STRING)\"
+endif
 
 ######################################
 # building variables
@@ -59,6 +66,8 @@ C_SOURCES += Src/stm32_lcd_ex.c
 C_SOURCES += Src/stm32n6xx_it.c
 C_SOURCES += Model/face_detector.c
 C_SOURCES += Model/face_landmark.c
+C_SOURCES += Model/stai_face_detector.c
+C_SOURCES += Model/stai_face_landmark.c
 C_SOURCES += Src/app_cam.c
 C_SOURCES += Src/freertos_bsp.c
 

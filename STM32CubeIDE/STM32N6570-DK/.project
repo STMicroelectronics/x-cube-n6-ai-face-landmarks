@@ -72,6 +72,16 @@
       <locationURI>PARENT-2-PROJECT_LOC/Model/face_landmark.c</locationURI>
     </link>
     <link>
+      <name>Model/stai_face_detector.c</name>
+      <type>1</type>
+      <locationURI>PARENT-2-PROJECT_LOC/Model/stai_face_detector.c</locationURI>
+    </link>
+    <link>
+      <name>Model/stai_face_landmark.c</name>
+      <type>1</type>
+      <locationURI>PARENT-2-PROJECT_LOC/Model/stai_face_landmark.c</locationURI>
+    </link>
+    <link>
       <name>Src/app_cam.c</name>
       <type>1</type>
       <locationURI>PARENT-2-PROJECT_LOC/Src/app_cam.c</locationURI>
@@ -307,6 +317,16 @@
       <locationURI>PARENT-2-PROJECT_LOC/Lib/AI_Runtime/Npu/ll_aton/ll_aton_runtime.c</locationURI>
     </link>
     <link>
+      <name>Lib/AI_Runtime/Npu/ll_aton/ll_aton_cipher.c</name>
+      <type>1</type>
+      <locationURI>PARENT-2-PROJECT_LOC/Lib/AI_Runtime/Npu/ll_aton/ll_aton_cipher.c</locationURI>
+    </link>
+    <link>
+      <name>Lib/AI_Runtime/Npu/ll_aton/ll_aton_stai_internal.c</name>
+      <type>1</type>
+      <locationURI>PARENT-2-PROJECT_LOC/Lib/AI_Runtime/Npu/ll_aton/ll_aton_stai_internal.c</locationURI>
+    </link>
+    <link>
       <name>Lib/AI_Runtime/Npu/ll_aton/ll_aton_util.c</name>
       <type>1</type>
       <locationURI>PARENT-2-PROJECT_LOC/Lib/AI_Runtime/Npu/ll_aton/ll_aton_util.c</locationURI>
@@ -327,14 +347,14 @@
       <locationURI>PARENT-2-PROJECT_LOC/Lib/AI_Runtime/Npu/ll_aton/ecloader.c</locationURI>
     </link>
     <link>
-      <name>Lib/AI_Runtime/Npu/Devices/STM32N6XX/npu_cache.c</name>
+      <name>Lib/AI_Runtime/Npu/Devices/STM32N6xx/npu_cache.c</name>
       <type>1</type>
-      <locationURI>PARENT-2-PROJECT_LOC/Lib/AI_Runtime/Npu/Devices/STM32N6XX/npu_cache.c</locationURI>
+      <locationURI>PARENT-2-PROJECT_LOC/Lib/AI_Runtime/Npu/Devices/STM32N6xx/npu_cache.c</locationURI>
     </link>
     <link>
-      <name>Lib/AI_Runtime/Npu/Devices/STM32N6XX/mcu_cache.c</name>
+      <name>Lib/AI_Runtime/Npu/Devices/STM32N6xx/mcu_cache.c</name>
       <type>1</type>
-      <locationURI>PARENT-2-PROJECT_LOC/Lib/AI_Runtime/Npu/Devices/STM32N6XX/mcu_cache.c</locationURI>
+      <locationURI>PARENT-2-PROJECT_LOC/Lib/AI_Runtime/Npu/Devices/STM32N6xx/mcu_cache.c</locationURI>
     </link>
     <link>
       <name>Lib/lib_vision_models_pp/lib_vision_models_pp/Src/fd_pp_blazeface.c</name>
@@ -397,9 +417,44 @@
       <locationURI>PARENT-2-PROJECT_LOC/Lib/Camera_Middleware/sensors/vd6g/vd6g.c</locationURI>
     </link>
     <link>
+      <name>Lib/Camera_Middleware/sensors/cmw_vd1943.c</name>
+      <type>1</type>
+      <locationURI>PARENT-2-PROJECT_LOC/Lib/Camera_Middleware/sensors/cmw_vd1943.c</locationURI>
+    </link>
+    <link>
+      <name>Lib/Camera_Middleware/sensors/vd1943/vd1943.c</name>
+      <type>1</type>
+      <locationURI>PARENT-2-PROJECT_LOC/Lib/Camera_Middleware/sensors/vd1943/vd1943.c</locationURI>
+    </link>
+    <link>
+      <name>Lib/Camera_Middleware/sensors/cmw_ov5640.c</name>
+      <type>1</type>
+      <locationURI>PARENT-2-PROJECT_LOC/Lib/Camera_Middleware/sensors/cmw_ov5640.c</locationURI>
+    </link>
+    <link>
+      <name>Lib/Camera_Middleware/sensors/ov5640/ov5640.c</name>
+      <type>1</type>
+      <locationURI>PARENT-2-PROJECT_LOC/Lib/Camera_Middleware/sensors/ov5640/ov5640.c</locationURI>
+    </link>
+    <link>
+      <name>Lib/Camera_Middleware/sensors/ov5640/ov5640_reg.c</name>
+      <type>1</type>
+      <locationURI>PARENT-2-PROJECT_LOC/Lib/Camera_Middleware/sensors/ov5640/ov5640_reg.c</locationURI>
+    </link>
+    <link>
       <name>Lib/Camera_Middleware/ISP_Library/isp/Src/isp_algo.c</name>
       <type>1</type>
       <locationURI>PARENT-2-PROJECT_LOC/Lib/Camera_Middleware/ISP_Library/isp/Src/isp_algo.c</locationURI>
+    </link>
+    <link>
+      <name>Lib/Camera_Middleware/ISP_Library/isp/Src/isp_awb_algo.c</name>
+      <type>1</type>
+      <locationURI>PARENT-2-PROJECT_LOC/Lib/Camera_Middleware/ISP_Library/isp/Src/isp_awb_algo.c</locationURI>
+    </link>
+    <link>
+      <name>Lib/Camera_Middleware/ISP_Library/isp/Src/isp_ae_algo.c</name>
+      <type>1</type>
+      <locationURI>PARENT-2-PROJECT_LOC/Lib/Camera_Middleware/ISP_Library/isp/Src/isp_ae_algo.c</locationURI>
     </link>
     <link>
       <name>Lib/Camera_Middleware/ISP_Library/isp/Src/isp_cmd_parser.c</name>

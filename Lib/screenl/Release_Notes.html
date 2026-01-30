@@ -5,12 +5,22 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Release_Notes</title>
-  <style type="text/css">
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-  </style>
+  <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
   <style type="text/css">@charset "UTF-8";
 
 
@@ -1475,9 +1485,11 @@ text-align: center;
 }</style>
 </head>
 <body>
-<h1 id="release-notes-for-stm32n6-screen-library-aka-screenl">Release Notes for STM32N6 Screen Library (aka screenl)</h1>
+<h1 id="release-notes-for-stm32n6-screen-library-aka-screenl">Release
+Notes for STM32N6 Screen Library (aka screenl)</h1>
 <h2 id="purpose">Purpose</h2>
-<p>Screenl purpose is to abstract display for application. It currently supports LDTC or Usb Uvc display.</p>
+<p>Screenl purpose is to abstract display for application. It currently
+supports LDTC or Usb Uvc display.</p>
 <h2 id="key-features">Key Features</h2>
 <ul>
 <li>Use either LDTC, Usb Uvc or SPI as display.</li>
@@ -1485,6 +1497,11 @@ text-align: center;
 </ul>
 <h2 id="software-components">Software components</h2>
 <table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 28%" />
+<col style="width: 52%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -1501,6 +1518,11 @@ text-align: center;
 </tbody>
 </table>
 <h2 id="update-history">Update history</h2>
+<h3 id="v3.0.1-january-2026">V3.0.1 / January 2026</h3>
+<ul>
+<li>Add missing licence headers</li>
+<li>Fix IAR warnings</li>
+</ul>
 <h3 id="v3.0.0-august-2025">V3.0.0 / August 2025</h3>
 <ul>
 <li>align with new uvcl API</li>
@@ -1519,7 +1541,8 @@ text-align: center;
 </ul>
 <h3 id="v2.0.0-march-2025">V2.0.0 / March 2025</h3>
 <ul>
-<li>Add SCRL_YUV422, SCRL_RGB888, SCRL_BGR888 and SCRL_ARGB8888 new formats</li>
+<li>Add SCRL_YUV422, SCRL_RGB888, SCRL_BGR888 and SCRL_ARGB8888 new
+formats</li>
 <li>Add SPI mode with X-NUCLEO-GFX01M2 support</li>
 <li>Add FreeRTOS support</li>
 <li>Fix missing CLK_SLEEP_ENABLE for miscellaneous IPs</li>

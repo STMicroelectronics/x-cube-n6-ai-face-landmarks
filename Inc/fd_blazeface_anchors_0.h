@@ -1,19 +1,20 @@
-/**
-  ******************************************************************************
-  * @file    fd_blazeface_anchors_0.h
-  * @author  MDG Application Team
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ /**
+ ******************************************************************************
+ * @file    fd_blazeface_anchors_0.h
+ * @author  GPM Application Team
+ *
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2024 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 
 #ifndef __ANCHORS_0_H__
 #define __ANCHORS_0_H__

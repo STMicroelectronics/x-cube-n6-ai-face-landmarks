@@ -19,20 +19,21 @@
 
 #include "app_postprocess.h"
 #include "app_config.h"
-#include "ll_aton_NN_interface.h"
 #include <assert.h>
 
 #if POSTPROCESS_TYPE == POSTPROCESS_OD_BLAZEFACE_UU
 #include "fd_blazeface_anchors_0.h"
 #include "fd_blazeface_anchors_1.h"
+#ifndef MAX
 #define MAX(a,b) (((a)>(b))?(a):(b))
+#endif
 static od_pp_outBuffer_t out_detections[MAX(AI_OD_BLAZEFACE_PP_MAX_BOXES_LIMIT, AI_OD_BLAZEFACE_PP_OUT_0_NB_BOXES + AI_OD_BLAZEFACE_PP_OUT_1_NB_BOXES)];
 
-int32_t app_postprocess_init(void *params_postprocess, NN_Instance_TypeDef *NN_Instance)
+int32_t app_postprocess_init(void *params_postprocess, stai_network_info *NN_Info)
 {
   int32_t error = AI_OD_POSTPROCESS_ERROR_NO;
   od_blazeface_pp_static_param_t *params = (od_blazeface_pp_static_param_t *) params_postprocess;
-  const LL_Buffer_InfoTypeDef *buffers_info = LL_ATON_Output_Buffers_Info(NN_Instance);
+
   params->in_size            = AI_OD_BLAZEFACE_PP_IMG_SIZE;
   params->nb_classes         = AI_OD_BLAZEFACE_PP_NB_CLASSES;
   params->nb_keypoints       = AI_OD_BLAZEFACE_PP_NB_KEYPOINTS;
@@ -43,14 +44,14 @@ int32_t app_postprocess_init(void *params_postprocess, NN_Instance_TypeDef *NN_I
   params->iou_threshold      = AI_OD_BLAZEFACE_PP_IOU_THRESHOLD;
   params->pAnchors_0         = g_Anchors_0;
   params->pAnchors_1         = g_Anchors_1;
-  params->boxe_0_scale       = *(buffers_info[0].scale);
-  params->boxe_0_zero_point  = *(buffers_info[0].offset);
-  params->proba_0_scale      = *(buffers_info[1].scale);
-  params->proba_0_zero_point = *(buffers_info[1].offset);
-  params->boxe_1_scale       = *(buffers_info[3].scale);
-  params->boxe_1_zero_point  = *(buffers_info[3].offset);
-  params->proba_1_scale      = *(buffers_info[2].scale);
-  params->proba_1_zero_point = *(buffers_info[2].offset);
+  params->boxe_0_scale       = NN_Info->outputs[0].scale.data[0];
+  params->boxe_0_zero_point  = NN_Info->outputs[0].zeropoint.data[0];
+  params->proba_0_scale      = NN_Info->outputs[1].scale.data[0];
+  params->proba_0_zero_point = NN_Info->outputs[1].zeropoint.data[0];
+  params->boxe_1_scale       = NN_Info->outputs[3].scale.data[0];
+  params->boxe_1_zero_point  = NN_Info->outputs[3].zeropoint.data[0];
+  params->proba_1_scale      = NN_Info->outputs[2].scale.data[0];
+  params->proba_1_zero_point = NN_Info->outputs[2].zeropoint.data[0];
   error = od_blazeface_pp_reset(params);
   return error;
 }

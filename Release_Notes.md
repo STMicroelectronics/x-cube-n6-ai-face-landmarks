@@ -23,16 +23,17 @@ The use case chosen is multi-faces landmark detection. It is made up of two mode
 
 | Name                          | Version             | Release notes
 |-----                          | -------             | -------------
-| STM32Cube.AI runtime          | 10.2.0              |
-| Camera Middleware             | v1.4.3              | [release notes](Lib/Camera_Middleware/Release_Notes.md)
-| Ipl Library                   | v1.1.0              | [release notes](Lib/ipl/README.md)
-| lib_vision_models_pp Library  | v0.12.0             | [release notes](Lib/lib_vision_models_pp/lib_vision_models_pp/README.md)
-| screenl                       | v3.0.0              | [release notes](Lib/screenl/Release_Notes.html)
-| post process wrapper          | v1.0.8              | [release notes](Lib/ai-postprocessing-wrapper/Release_Notes.html)
-| CMSIS                         | v5.9.0              | [release notes](STM32Cube_FW_N6/Drivers/CMSIS/Documentation/index.html)
-| STM32N6xx CMSIS Device        | v1.2.0              | [release notes](STM32Cube_FW_N6/Drivers/CMSIS/Device/ST/STM32N6xx/Release_Notes.html)
-| STM32N6xx HAL/LL Drivers      | v1.2.0              | [release notes](STM32Cube_FW_N6/Drivers/STM32N6xx_HAL_Driver/Release_Notes.html)
-| STM32N6570-DK BSP Drivers     | v1.2.0              | [release notes](STM32Cube_FW_N6/Drivers/BSP/STM32N6570-DK/Release_Notes.html)
+| STM32Cube.AI runtime          | 11.0.0              |
+| Camera Middleware             | v1.5.0              | [release notes](Lib/Camera_Middleware/Release_Notes.md)
+| Ipl Library                   | v1.2.0              | [release notes](Lib/ipl/README.md)
+| lib_vision_models_pp Library  | v0.13.0             | [release notes](Lib/lib_vision_models_pp/lib_vision_models_pp/README.md)
+| screenl                       | v3.0.1              | [release notes](Lib/screenl/Release_Notes.html)
+| post process wrapper          | v1.0.9              | [release notes](Lib/ai-postprocessing-wrapper/Release_Notes.html)
+| CMSIS                         | v6.2.0              | [release notes](STM32Cube_FW_N6/Drivers/CMSIS/Documentation/index.html)
+| STM32N6xx CMSIS Device        | v1.3.0              | [release notes](STM32Cube_FW_N6/Drivers/CMSIS/Device/ST/STM32N6xx/Release_Notes.html)
+| STM32N6xx HAL/LL Drivers      | v1.3.0              | [release notes](STM32Cube_FW_N6/Drivers/STM32N6xx_HAL_Driver/Release_Notes.html)
+| STM32N6570-DK BSP Drivers     | v1.3.0              | [release notes](STM32Cube_FW_N6/Drivers/BSP/STM32N6570-DK/Release_Notes.html)
+| NUCLEO-N657X0-Q BSP Drivers   | v1.2.0              | [release notes](STM32Cube_FW_N6/Drivers/BSP/STM32N6xx_Nucleo/Release_Notes.html)
 | BSP Component aps256xx        | v1.0.6              | [release notes](STM32Cube_FW_N6/Drivers/BSP/Components/aps256xx/Release_Notes.html)
 | BSP Component Common          | v7.3.0              | [release notes](STM32Cube_FW_N6/Drivers/BSP/Components/Common/Release_Notes.html)
 | BSP Component mx66uw1g45g     | v1.1.0              | [release notes](STM32Cube_FW_N6/Drivers/BSP/Components/mx66uw1g45g/Release_Notes.html)
@@ -43,8 +44,21 @@ The use case chosen is multi-faces landmark detection. It is made up of two mode
 | Fonts Utility                 | v2.0.3              | [release notes](STM32Cube_FW_N6/Utilities/Fonts/Release_Notes.html)
 | lcd Utility                   | v2.2.0              | [release notes](STM32Cube_FW_N6/Utilities/lcd/Release_Notes.html)
 | Nema SDK                      | v1.3.0              |
+| ai fsbl                       | v1.4.0              | [release notes](FSBL/Release_Notes.md)
 
 ## Update history
+
+### v1.1.0 / January 2026
+
+- Update Cube FW to v1.3.0
+- Update STEdgeAI to v3.0.0
+- Switch to STEdgeAI `st-ai` API
+- Update Camera Middleware to v1.5.0
+- Update lib_vision_models_pp to v0.13.0
+- Update screenl to v3.0.1
+- Update ai-postprocessing-wrapper to v1.0.9
+- Update IPL to v1.2.0
+- Add STEVAL-1943-MC1 camera module support
 
 ### v1.0.0 / September 2025
 

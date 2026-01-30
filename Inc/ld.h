@@ -18,9 +18,11 @@
 #ifndef _FACE_LANDMARK_
 #define _FACE_LANDMARK_
 
+#include "stai_face_landmark.h"
+
 /* model hard coded values */
-#define LD_WIDTH              192.0f
-#define LD_HEIGHT             192.0f
+#define LD_WIDTH              ((float)STAI_FACE_LANDMARK_IN_1_WIDTH)
+#define LD_HEIGHT             ((float)STAI_FACE_LANDMARK_IN_1_HEIGHT)
 #define LD_LANDMARK_NB        468
 #define LD_BINDING_NB         0
 

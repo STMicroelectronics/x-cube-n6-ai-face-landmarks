@@ -1,11 +1,5 @@
-/**************************************************************************//**
- * @file     core_ca.h
- * @brief    CMSIS Cortex-A Core Peripheral Access Layer Header File
- * @version  V1.0.3
- * @date     28. January 2020
- ******************************************************************************/
 /*
- * Copyright (c) 2009-2020 ARM Limited. All rights reserved.
+ * Copyright (c) 2009-2023 ARM Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -22,14 +16,18 @@
  * limitations under the License.
  */
 
+/*
+ * CMSIS Cortex-A Core Peripheral Access Layer Header File
+ */
+
+#ifndef __CORE_CA_H_GENERIC
+#define __CORE_CA_H_GENERIC
+
 #if   defined ( __ICCARM__ )
   #pragma system_include         /* treat file as system include file for MISRA check */
 #elif defined (__clang__)
   #pragma clang system_header   /* treat file as system include file */
 #endif
-
-#ifndef __CORE_CA_H_GENERIC
-#define __CORE_CA_H_GENERIC
 
 #ifdef __cplusplus
  extern "C" {
@@ -39,18 +37,16 @@
  *                 CMSIS definitions
  ******************************************************************************/
 
+#include "cmsis_version.h"
+
 /*  CMSIS CA definitions */
-#define __CA_CMSIS_VERSION_MAIN  (1U)                                      /*!< \brief [31:16] CMSIS-Core(A) main version   */
-#define __CA_CMSIS_VERSION_SUB   (1U)                                      /*!< \brief [15:0]  CMSIS-Core(A) sub version    */
-#define __CA_CMSIS_VERSION       ((__CA_CMSIS_VERSION_MAIN << 16U) | \
-                                   __CA_CMSIS_VERSION_SUB          )       /*!< \brief CMSIS-Core(A) version number         */
 
 #if defined ( __CC_ARM )
-  #if defined __TARGET_FPU_VFP
-    #if (__FPU_PRESENT == 1)
+  #if defined (__TARGET_FPU_VFP)
+    #if defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)
       #define __FPU_USED       1U
     #else
-      #warning "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
+      #error "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
       #define __FPU_USED       0U
     #endif
   #else
@@ -58,11 +54,11 @@
   #endif
 
 #elif defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
-  #if defined __ARM_FP
+  #if defined (__ARM_FP)
     #if defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)
       #define __FPU_USED       1U
     #else
-      #warning "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
+      #error "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
       #define __FPU_USED       0U
     #endif
   #else
@@ -70,11 +66,11 @@
   #endif
 
 #elif defined ( __ICCARM__ )
-  #if defined __ARMVFP__
-    #if (__FPU_PRESENT == 1)
+  #if defined (__ARMVFP__)
+    #if defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)
       #define __FPU_USED       1U
     #else
-      #warning "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
+      #error "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
       #define __FPU_USED       0U
     #endif
   #else
@@ -83,10 +79,10 @@
 
 #elif defined ( __TMS470__ )
   #if defined __TI_VFP_SUPPORT__
-    #if (__FPU_PRESENT == 1)
+    #if defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)
       #define __FPU_USED       1U
     #else
-      #warning "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
+      #error "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
       #define __FPU_USED       0U
     #endif
   #else
@@ -95,10 +91,10 @@
 
 #elif defined ( __GNUC__ )
   #if defined (__VFP_FP__) && !defined(__SOFTFP__)
-    #if (__FPU_PRESENT == 1)
+    #if defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)
       #define __FPU_USED       1U
     #else
-      #warning "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
+      #error "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
       #define __FPU_USED       0U
     #endif
   #else
@@ -106,8 +102,8 @@
   #endif
 
 #elif defined ( __TASKING__ )
-  #if defined __FPU_VFP__
-    #if (__FPU_PRESENT == 1)
+  #if defined (__FPU_VFP__)
+    #if defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)
       #define __FPU_USED       1U
     #else
       #error "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
@@ -131,6 +127,12 @@
 #ifndef __CORE_CA_H_DEPENDANT
 #define __CORE_CA_H_DEPENDANT
 
+#if   defined ( __ICCARM__ )
+  #pragma system_include         /* treat file as system include file for MISRA check */
+#elif defined (__clang__)
+  #pragma clang system_header   /* treat file as system include file */
+#endif
+
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -138,25 +140,25 @@
  /* check device defines and use defaults */
 #if defined __CHECK_DEVICE_DEFINES
   #ifndef __CA_REV
-    #define __CA_REV              0x0000U
+    #define __CA_REV              0x0000U /*!< \brief Contains the core revision for a Cortex-A class device */
     #warning "__CA_REV not defined in device header file; using default!"
   #endif
-  
+
   #ifndef __FPU_PRESENT
     #define __FPU_PRESENT             0U
     #warning "__FPU_PRESENT not defined in device header file; using default!"
   #endif
-    
+
   #ifndef __GIC_PRESENT
     #define __GIC_PRESENT             1U
     #warning "__GIC_PRESENT not defined in device header file; using default!"
   #endif
-  
+
   #ifndef __TIM_PRESENT
     #define __TIM_PRESENT             1U
     #warning "__TIM_PRESENT not defined in device header file; using default!"
   #endif
-  
+
   #ifndef __L2C_PRESENT
     #define __L2C_PRESENT             0U
     #warning "__L2C_PRESENT not defined in device header file; using default!"
@@ -201,7 +203,7 @@ typedef union
     uint32_t E:1;                        /*!< \brief bit:      9  Endianness execution state bit */
     uint32_t IT1:6;                      /*!< \brief bit: 10..15  If-Then execution state bits 2-7 */
     uint32_t GE:4;                       /*!< \brief bit: 16..19  Greater than or Equal flags */
-    RESERVED(0:4, uint32_t)              
+    RESERVED(0:4, uint32_t)
     uint32_t J:1;                        /*!< \brief bit:     24  Jazelle bit */
     uint32_t IT0:2;                      /*!< \brief bit: 25..26  If-Then execution state bits 0-1 */
     uint32_t Q:1;                        /*!< \brief bit:     27  Saturation condition flag */
@@ -279,32 +281,32 @@ typedef union
     uint32_t M:1;                        /*!< \brief bit:     0  MMU enable */
     uint32_t A:1;                        /*!< \brief bit:     1  Alignment check enable */
     uint32_t C:1;                        /*!< \brief bit:     2  Cache enable */
-    RESERVED(0:2, uint32_t)              
+    RESERVED(0:2, uint32_t)
     uint32_t CP15BEN:1;                  /*!< \brief bit:     5  CP15 barrier enable */
-    RESERVED(1:1, uint32_t)              
+    RESERVED(1:1, uint32_t)
     uint32_t B:1;                        /*!< \brief bit:     7  Endianness model */
-    RESERVED(2:2, uint32_t)              
+    RESERVED(2:2, uint32_t)
     uint32_t SW:1;                       /*!< \brief bit:    10  SWP and SWPB enable */
     uint32_t Z:1;                        /*!< \brief bit:    11  Branch prediction enable */
     uint32_t I:1;                        /*!< \brief bit:    12  Instruction cache enable */
     uint32_t V:1;                        /*!< \brief bit:    13  Vectors bit */
     uint32_t RR:1;                       /*!< \brief bit:    14  Round Robin select */
-    RESERVED(3:2, uint32_t)              
+    RESERVED(3:2, uint32_t)
     uint32_t HA:1;                       /*!< \brief bit:    17  Hardware Access flag enable */
-    RESERVED(4:1, uint32_t)              
+    RESERVED(4:1, uint32_t)
     uint32_t WXN:1;                      /*!< \brief bit:    19  Write permission implies XN */
     uint32_t UWXN:1;                     /*!< \brief bit:    20  Unprivileged write permission implies PL1 XN */
     uint32_t FI:1;                       /*!< \brief bit:    21  Fast interrupts configuration enable */
     uint32_t U:1;                        /*!< \brief bit:    22  Alignment model */
-    RESERVED(5:1, uint32_t)              
+    RESERVED(5:1, uint32_t)
     uint32_t VE:1;                       /*!< \brief bit:    24  Interrupt Vectors Enable */
     uint32_t EE:1;                       /*!< \brief bit:    25  Exception Endianness */
-    RESERVED(6:1, uint32_t)              
+    RESERVED(6:1, uint32_t)
     uint32_t NMFI:1;                     /*!< \brief bit:    27  Non-maskable FIQ (NMFI) support */
     uint32_t TRE:1;                      /*!< \brief bit:    28  TEX remap enable. */
     uint32_t AFE:1;                      /*!< \brief bit:    29  Access flag enable */
     uint32_t TE:1;                       /*!< \brief bit:    30  Thumb Exception enable */
-    RESERVED(7:1, uint32_t)              
+    RESERVED(7:1, uint32_t)
   } b;                                   /*!< \brief Structure used for bit  access */
   uint32_t w;                            /*!< \brief Type      used for word access */
 } SCTLR_Type;
@@ -380,39 +382,39 @@ typedef union
   struct
   {
     uint32_t FW:1;                      /*!< \brief bit:      0  Cache and TLB maintenance broadcast */
-    RESERVED(0:5, uint32_t)              
+    RESERVED(0:5, uint32_t)
     uint32_t SMP:1;                      /*!< \brief bit:     6  Enables coherent requests to the processor */
     uint32_t EXCL:1;                     /*!< \brief bit:     7  Exclusive L1/L2 cache control */
     RESERVED(1:2, uint32_t)
     uint32_t DODMBS:1;                   /*!< \brief bit:    10  Disable optimized data memory barrier behavior */
     uint32_t DWBST:1;                    /*!< \brief bit:    11  AXI data write bursts to Normal memory */
     uint32_t RADIS:1;                    /*!< \brief bit:    12  L1 Data Cache read-allocate mode disable */
-    uint32_t L1PCTL:2;                   /*!< \brief bit:13..14  L1 Data prefetch control */    
+    uint32_t L1PCTL:2;                   /*!< \brief bit:13..14  L1 Data prefetch control */
     uint32_t BP:2;                       /*!< \brief bit:16..15  Branch prediction policy */
     uint32_t RSDIS:1;                    /*!< \brief bit:    17  Disable return stack operation */
     uint32_t BTDIS:1;                    /*!< \brief bit:    18  Disable indirect Branch Target Address Cache (BTAC) */
-    RESERVED(3:9, uint32_t)             
+    RESERVED(3:9, uint32_t)
     uint32_t DBDI:1;                     /*!< \brief bit:    28  Disable branch dual issue */
-    RESERVED(7:3, uint32_t)              
+    RESERVED(7:3, uint32_t)
  } b;
-#endif  
+#endif
 #if __CORTEX_A == 7 || defined(DOXYGEN)
   /** \brief Structure used for bit access on Cortex-A7 */
   struct
   {
-    RESERVED(0:6, uint32_t)              
+    RESERVED(0:6, uint32_t)
     uint32_t SMP:1;                      /*!< \brief bit:     6  Enables coherent requests to the processor */
-    RESERVED(1:3, uint32_t)              
+    RESERVED(1:3, uint32_t)
     uint32_t DODMBS:1;                   /*!< \brief bit:    10  Disable optimized data memory barrier behavior */
     uint32_t L2RADIS:1;                  /*!< \brief bit:    11  L2 Data Cache read-allocate mode disable */
     uint32_t L1RADIS:1;                  /*!< \brief bit:    12  L1 Data Cache read-allocate mode disable */
     uint32_t L1PCTL:2;                   /*!< \brief bit:13..14  L1 Data prefetch control */
     uint32_t DDVM:1;                     /*!< \brief bit:    15  Disable Distributed Virtual Memory (DVM) transactions */
-    RESERVED(3:12, uint32_t)             
+    RESERVED(3:12, uint32_t)
     uint32_t DDI:1;                      /*!< \brief bit:    28  Disable dual issue */
-    RESERVED(7:3, uint32_t)              
+    RESERVED(7:3, uint32_t)
   } b;
-#endif  
+#endif
 #if __CORTEX_A == 9 || defined(DOXYGEN)
   /** \brief Structure used for bit access on Cortex-A9 */
   struct
@@ -426,9 +428,9 @@ typedef union
     uint32_t EXCL:1;                     /*!< \brief bit:     7  Exclusive L1/L2 cache control */
     uint32_t AOW:1;                      /*!< \brief bit:     8  Enable allocation in one cache way only */
     uint32_t PARITY:1;                   /*!< \brief bit:     9  Support for parity checking, if implemented */
-    RESERVED(7:22, uint32_t)              
+    RESERVED(7:22, uint32_t)
   } b;
-#endif  
+#endif
   uint32_t w;                            /*!< \brief Type      used for word access */
 } ACTLR_Type;
 
@@ -509,7 +511,7 @@ typedef union
     uint32_t CP12:2;                     /*!< \brief bit:24..25  Access rights for coprocessor 11 */
     uint32_t CP13:2;                     /*!< \brief bit:26..27  Access rights for coprocessor 11 */
     uint32_t TRCDIS:1;                   /*!< \brief bit:    28  Disable CP14 access to trace registers */
-    RESERVED(0:1, uint32_t)              
+    RESERVED(0:1, uint32_t)
     uint32_t D32DIS:1;                   /*!< \brief bit:    30  Disable use of registers D16-D31 of the VFP register file */
     uint32_t ASEDIS:1;                   /*!< \brief bit:    31  Disable Advanced SIMD Functionality */
   } b;                                   /*!< \brief Structure used for bit  access */
@@ -539,24 +541,24 @@ typedef union
   {
     uint32_t FS0:4;                      /*!< \brief bit: 0.. 3  Fault Status bits bit 0-3 */
     uint32_t Domain:4;                   /*!< \brief bit: 4.. 7  Fault on which domain */
-    RESERVED(0:1, uint32_t)              
+    RESERVED(0:1, uint32_t)
     uint32_t LPAE:1;                     /*!< \brief bit:     9  Large Physical Address Extension */
     uint32_t FS1:1;                      /*!< \brief bit:    10  Fault Status bits bit 4 */
     uint32_t WnR:1;                      /*!< \brief bit:    11  Write not Read bit */
     uint32_t ExT:1;                      /*!< \brief bit:    12  External abort type */
     uint32_t CM:1;                       /*!< \brief bit:    13  Cache maintenance fault */
-    RESERVED(1:18, uint32_t)             
+    RESERVED(1:18, uint32_t)
   } s;                                   /*!< \brief Structure used for bit  access in short format */
   struct
   {
     uint32_t STATUS:5;                   /*!< \brief bit: 0.. 5  Fault Status bits */
-    RESERVED(0:3, uint32_t)              
+    RESERVED(0:3, uint32_t)
     uint32_t LPAE:1;                     /*!< \brief bit:     9  Large Physical Address Extension */
-    RESERVED(1:1, uint32_t)              
+    RESERVED(1:1, uint32_t)
     uint32_t WnR:1;                      /*!< \brief bit:    11  Write not Read bit */
     uint32_t ExT:1;                      /*!< \brief bit:    12  External abort type */
     uint32_t CM:1;                       /*!< \brief bit:    13  Cache maintenance fault */
-    RESERVED(2:18, uint32_t)             
+    RESERVED(2:18, uint32_t)
   } l;                                   /*!< \brief Structure used for bit  access in long format */
   uint32_t w;                            /*!< \brief Type      used for word access */
 } DFSR_Type;
@@ -591,21 +593,21 @@ typedef union
   struct
   {
     uint32_t FS0:4;                      /*!< \brief bit: 0.. 3  Fault Status bits bit 0-3 */
-    RESERVED(0:5, uint32_t)              
+    RESERVED(0:5, uint32_t)
     uint32_t LPAE:1;                     /*!< \brief bit:     9  Large Physical Address Extension */
     uint32_t FS1:1;                      /*!< \brief bit:    10  Fault Status bits bit 4 */
-    RESERVED(1:1, uint32_t)              
+    RESERVED(1:1, uint32_t)
     uint32_t ExT:1;                      /*!< \brief bit:    12  External abort type */
-    RESERVED(2:19, uint32_t)             
+    RESERVED(2:19, uint32_t)
   } s;                                   /*!< \brief Structure used for bit access in short format */
   struct
   {
     uint32_t STATUS:6;                   /*!< \brief bit: 0.. 5  Fault Status bits */
-    RESERVED(0:3, uint32_t)              
+    RESERVED(0:3, uint32_t)
     uint32_t LPAE:1;                     /*!< \brief bit:     9  Large Physical Address Extension */
-    RESERVED(1:2, uint32_t)              
+    RESERVED(1:2, uint32_t)
     uint32_t ExT:1;                      /*!< \brief bit:    12  External abort type */
-    RESERVED(2:19, uint32_t)             
+    RESERVED(2:19, uint32_t)
   } l;                                   /*!< \brief Structure used for bit access in long format */
   uint32_t w;                            /*!< \brief Type      used for word access */
 } IFSR_Type;
@@ -630,22 +632,22 @@ typedef union
 {
   struct
   {
-    RESERVED(0:6, uint32_t)              
+    RESERVED(0:6, uint32_t)
     uint32_t F:1;                        /*!< \brief bit:     6  FIQ pending bit */
     uint32_t I:1;                        /*!< \brief bit:     7  IRQ pending bit */
     uint32_t A:1;                        /*!< \brief bit:     8  External abort pending bit */
-    RESERVED(1:23, uint32_t)             
+    RESERVED(1:23, uint32_t)
   } b;                                   /*!< \brief Structure used for bit  access */
   uint32_t w;                            /*!< \brief Type      used for word access */
 } ISR_Type;
 
-#define ISR_A_Pos                        13U                                    /*!< \brief ISR: A Position */
+#define ISR_A_Pos                        8U                                     /*!< \brief ISR: A Position */
 #define ISR_A_Msk                        (1UL << ISR_A_Pos)                     /*!< \brief ISR: A Mask */
 
-#define ISR_I_Pos                        12U                                    /*!< \brief ISR: I Position */
+#define ISR_I_Pos                        7U                                     /*!< \brief ISR: I Position */
 #define ISR_I_Msk                        (1UL << ISR_I_Pos)                     /*!< \brief ISR: I Mask */
 
-#define ISR_F_Pos                        11U                                    /*!< \brief ISR: F Position */
+#define ISR_F_Pos                        6U                                     /*!< \brief ISR: F Position */
 #define ISR_F_Msk                        (1UL << ISR_F_Pos)                     /*!< \brief ISR: F Mask */
 
 /* DACR Register */
@@ -664,7 +666,7 @@ typedef union
 #define _VAL2FLD(field, value)    (((uint32_t)(value) << field ## _Pos) & field ## _Msk)
 
 /**
-  \brief     Mask and shift a register value to extract a bit filed value.
+  \brief     Mask and shift a register value to extract a bit field value.
   \param [in] field  Name of the register bit field.
   \param [in] value  Value of register. This parameter is interpreted as an uint32_t type.
   \return           Masked and shifted bit field value.
@@ -675,7 +677,8 @@ typedef union
 /**
  \brief  Union type to access the L2C_310 Cache Controller.
 */
-#if (__L2C_PRESENT == 1U) || defined(DOXYGEN)
+#if (defined(__L2C_PRESENT) && (__L2C_PRESENT == 1U)) || \
+     defined(DOXYGEN)
 typedef struct
 {
   __IM  uint32_t CACHE_ID;                   /*!< \brief Offset: 0x0000 (R/ ) Cache ID Register               */
@@ -738,8 +741,9 @@ typedef struct
 #define L2C_310           ((L2C_310_TypeDef *)L2C_310_BASE) /*!< \brief L2C_310 register set access pointer */
 #endif
 
-#if (__GIC_PRESENT == 1U) || defined(DOXYGEN)
-    
+#if (defined(__GIC_PRESENT) && (__GIC_PRESENT == 1U)) || \
+    defined(DOXYGEN)
+
 /** \brief  Structure type to access the Generic Interrupt Controller Distributor (GICD)
 */
 typedef struct
@@ -783,6 +787,175 @@ typedef struct
 
 #define GICDistributor      ((GICDistributor_Type      *)     GIC_DISTRIBUTOR_BASE ) /*!< \brief GIC Distributor register set access pointer */
 
+/* GICDistributor CTLR Register */
+#define GICDistributor_CTLR_EnableGrp0_Pos    0U                                                   /*!< GICDistributor CTLR: EnableGrp0 Position */
+#define GICDistributor_CTLR_EnableGrp0_Msk    (0x1U /*<< GICDistributor_CTLR_EnableGrp0_Pos*/)     /*!< GICDistributor CTLR: EnableGrp0 Mask */
+#define GICDistributor_CTLR_EnableGrp0(x)     (((uint32_t)(((uint32_t)(x)) /*<< GICDistributor_CTLR_EnableGrp0_Pos*/)) & GICDistributor_CTLR_EnableGrp0_Msk)
+
+#define GICDistributor_CTLR_EnableGrp1_Pos    1U                                                   /*!< GICDistributor CTLR: EnableGrp1 Position */
+#define GICDistributor_CTLR_EnableGrp1_Msk    (0x1U << GICDistributor_CTLR_EnableGrp1_Pos)         /*!< GICDistributor CTLR: EnableGrp1 Mask */
+#define GICDistributor_CTLR_EnableGrp1(x)     (((uint32_t)(((uint32_t)(x)) << GICDistributor_CTLR_EnableGrp1_Pos)) & GICDistributor_CTLR_EnableGrp1_Msk)
+
+#define GICDistributor_CTLR_ARE_Pos           4U                                                   /*!< GICDistributor CTLR: ARE Position */
+#define GICDistributor_CTLR_ARE_Msk           (0x1U << GICDistributor_CTLR_ARE_Pos)                /*!< GICDistributor CTLR: ARE Mask */
+#define GICDistributor_CTLR_ARE(x)            (((uint32_t)(((uint32_t)(x)) << GICDistributor_CTLR_ARE_Pos)) & GICDistributor_CTLR_ARE_Msk)
+
+#define GICDistributor_CTLR_DC_Pos            6U                                                   /*!< GICDistributor CTLR: DC Position */
+#define GICDistributor_CTLR_DC_Msk            (0x1U << GICDistributor_CTLR_DC_Pos)                 /*!< GICDistributor CTLR: DC Mask */
+#define GICDistributor_CTLR_DC(x)             (((uint32_t)(((uint32_t)(x)) << GICDistributor_CTLR_DC_Pos)) & GICDistributor_CTLR_DC_Msk)
+
+#define GICDistributor_CTLR_EINWF_Pos         7U                                                   /*!< GICDistributor CTLR: EINWF Position */
+#define GICDistributor_CTLR_EINWF_Msk         (0x1U << GICDistributor_CTLR_EINWF_Pos)              /*!< GICDistributor CTLR: EINWF Mask */
+#define GICDistributor_CTLR_EINWF(x)          (((uint32_t)(((uint32_t)(x)) << GICDistributor_CTLR_EINWF_Pos)) & GICDistributor_CTLR_EINWF_Msk)
+
+#define GICDistributor_CTLR_RWP_Pos           31U                                                  /*!< GICDistributor CTLR: RWP Position */
+#define GICDistributor_CTLR_RWP_Msk           (0x1U << GICDistributor_CTLR_RWP_Pos)                /*!< GICDistributor CTLR: RWP Mask */
+#define GICDistributor_CTLR_RWP(x)            (((uint32_t)(((uint32_t)(x)) << GICDistributor_CTLR_RWP_Pos)) & GICDistributor_CTLR_RWP_Msk)
+
+/* GICDistributor TYPER Register */
+#define GICDistributor_TYPER_ITLinesNumber_Pos 0U                                                    /*!< GICDistributor TYPER: ITLinesNumber Position */
+#define GICDistributor_TYPER_ITLinesNumber_Msk (0x1FU /*<< GICDistributor_TYPER_ITLinesNumber_Pos*/) /*!< GICDistributor TYPER: ITLinesNumber Mask */
+#define GICDistributor_TYPER_ITLinesNumber(x)  (((uint32_t)(((uint32_t)(x)) /*<< GICDistributor_TYPER_ITLinesNumber_Pos*/)) & GICDistributor_CTLR_ITLinesNumber_Msk)
+
+#define GICDistributor_TYPER_CPUNumber_Pos    5U                                                   /*!< GICDistributor TYPER: CPUNumber Position */
+#define GICDistributor_TYPER_CPUNumber_Msk    (0x7U << GICDistributor_TYPER_CPUNumber_Pos)         /*!< GICDistributor TYPER: CPUNumber Mask */
+#define GICDistributor_TYPER_CPUNumber(x)     (((uint32_t)(((uint32_t)(x)) << GICDistributor_TYPER_CPUNumber_Pos)) & GICDistributor_TYPER_CPUNumber_Msk)
+
+#define GICDistributor_TYPER_SecurityExtn_Pos 10U                                                  /*!< GICDistributor TYPER: SecurityExtn Position */
+#define GICDistributor_TYPER_SecurityExtn_Msk (0x1U << GICDistributor_TYPER_SecurityExtn_Pos)      /*!< GICDistributor TYPER: SecurityExtn Mask */
+#define GICDistributor_TYPER_SecurityExtn(x)  (((uint32_t)(((uint32_t)(x)) << GICDistributor_TYPER_SecurityExtn_Pos)) & GICDistributor_TYPER_SecurityExtn_Msk)
+
+#define GICDistributor_TYPER_LSPI_Pos         11U                                                  /*!< GICDistributor TYPER: LSPI Position */
+#define GICDistributor_TYPER_LSPI_Msk         (0x1FU << GICDistributor_TYPER_LSPI_Pos)             /*!< GICDistributor TYPER: LSPI Mask */
+#define GICDistributor_TYPER_LSPI(x)          (((uint32_t)(((uint32_t)(x)) << GICDistributor_TYPER_LSPI_Pos)) & GICDistributor_TYPER_LSPI_Msk)
+
+/* GICDistributor IIDR Register */
+#define GICDistributor_IIDR_Implementer_Pos   0U                                                   /*!< GICDistributor IIDR: Implementer Position */
+#define GICDistributor_IIDR_Implementer_Msk   (0xFFFU /*<< GICDistributor_IIDR_Implementer_Pos*/)  /*!< GICDistributor IIDR: Implementer Mask */
+#define GICDistributor_IIDR_Implementer(x)    (((uint32_t)(((uint32_t)(x)) /*<< GICDistributor_IIDR_Implementer_Pos*/)) & GICDistributor_IIDR_Implementer_Msk)
+
+#define GICDistributor_IIDR_Revision_Pos      12U                                                  /*!< GICDistributor IIDR: Revision Position */
+#define GICDistributor_IIDR_Revision_Msk      (0xFU << GICDistributor_IIDR_Revision_Pos)           /*!< GICDistributor IIDR: Revision Mask */
+#define GICDistributor_IIDR_Revision(x)       (((uint32_t)(((uint32_t)(x)) << GICDistributor_IIDR_Revision_Pos)) & GICDistributor_IIDR_Revision_Msk)
+
+#define GICDistributor_IIDR_Variant_Pos       16U                                                  /*!< GICDistributor IIDR: Variant Position */
+#define GICDistributor_IIDR_Variant_Msk       (0xFU << GICDistributor_IIDR_Variant_Pos)            /*!< GICDistributor IIDR: Variant Mask */
+#define GICDistributor_IIDR_Variant(x)        (((uint32_t)(((uint32_t)(x)) << GICDistributor_IIDR_Variant_Pos)) & GICDistributor_IIDR_Variant_Msk)
+
+#define GICDistributor_IIDR_ProductID_Pos     24U                                                  /*!< GICDistributor IIDR: ProductID Position */
+#define GICDistributor_IIDR_ProductID_Msk     (0xFFU << GICDistributor_IIDR_ProductID_Pos)         /*!< GICDistributor IIDR: ProductID Mask */
+#define GICDistributor_IIDR_ProductID(x)      (((uint32_t)(((uint32_t)(x)) << GICDistributor_IIDR_ProductID_Pos)) & GICDistributor_IIDR_ProductID_Msk)
+
+/* GICDistributor STATUSR Register */
+#define GICDistributor_STATUSR_RRD_Pos        0U                                                   /*!< GICDistributor STATUSR: RRD Position */
+#define GICDistributor_STATUSR_RRD_Msk        (0x1U /*<< GICDistributor_STATUSR_RRD_Pos*/)         /*!< GICDistributor STATUSR: RRD Mask */
+#define GICDistributor_STATUSR_RRD(x)         (((uint32_t)(((uint32_t)(x)) /*<< GICDistributor_STATUSR_RRD_Pos*/)) & GICDistributor_STATUSR_RRD_Msk)
+
+#define GICDistributor_STATUSR_WRD_Pos        1U                                                   /*!< GICDistributor STATUSR: WRD Position */
+#define GICDistributor_STATUSR_WRD_Msk        (0x1U << GICDistributor_STATUSR_WRD_Pos)             /*!< GICDistributor STATUSR: WRD Mask */
+#define GICDistributor_STATUSR_WRD(x)         (((uint32_t)(((uint32_t)(x)) << GICDistributor_STATUSR_WRD_Pos)) & GICDistributor_STATUSR_WRD_Msk)
+
+#define GICDistributor_STATUSR_RWOD_Pos       2U                                                   /*!< GICDistributor STATUSR: RWOD Position */
+#define GICDistributor_STATUSR_RWOD_Msk       (0x1U << GICDistributor_STATUSR_RWOD_Pos)            /*!< GICDistributor STATUSR: RWOD Mask */
+#define GICDistributor_STATUSR_RWOD(x)        (((uint32_t)(((uint32_t)(x)) << GICDistributor_STATUSR_RWOD_Pos)) & GICDistributor_STATUSR_RWOD_Msk)
+
+#define GICDistributor_STATUSR_WROD_Pos       3U                                                   /*!< GICDistributor STATUSR: WROD Position */
+#define GICDistributor_STATUSR_WROD_Msk       (0x1U << GICDistributor_STATUSR_WROD_Pos)            /*!< GICDistributor STATUSR: WROD Mask */
+#define GICDistributor_STATUSR_WROD(x)        (((uint32_t)(((uint32_t)(x)) << GICDistributor_STATUSR_WROD_Pos)) & GICDistributor_STATUSR_WROD_Msk)
+
+/* GICDistributor SETSPI_NSR Register */
+#define GICDistributor_SETSPI_NSR_INTID_Pos   0U                                                   /*!< GICDistributor SETSPI_NSR: INTID Position */
+#define GICDistributor_SETSPI_NSR_INTID_Msk   (0x3FFU /*<< GICDistributor_SETSPI_NSR_INTID_Pos*/)  /*!< GICDistributor SETSPI_NSR: INTID Mask */
+#define GICDistributor_SETSPI_NSR_INTID(x)    (((uint32_t)(((uint32_t)(x)) /*<< GICDistributor_SETSPI_NSR_INTID_Pos*/)) & GICDistributor_SETSPI_NSR_INTID_Msk)
+
+/* GICDistributor CLRSPI_NSR Register */
+#define GICDistributor_CLRSPI_NSR_INTID_Pos   0U                                                   /*!< GICDistributor CLRSPI_NSR: INTID Position */
+#define GICDistributor_CLRSPI_NSR_INTID_Msk   (0x3FFU /*<< GICDistributor_CLRSPI_NSR_INTID_Pos*/)  /*!< GICDistributor CLRSPI_NSR: INTID Mask */
+#define GICDistributor_CLRSPI_NSR_INTID(x)    (((uint32_t)(((uint32_t)(x)) /*<< GICDistributor_CLRSPI_NSR_INTID_Pos*/)) & GICDistributor_CLRSPI_NSR_INTID_Msk)
+
+/* GICDistributor SETSPI_SR Register */
+#define GICDistributor_SETSPI_SR_INTID_Pos    0U                                                  /*!< GICDistributor SETSPI_SR: INTID Position */
+#define GICDistributor_SETSPI_SR_INTID_Msk    (0x3FFU /*<< GICDistributor_SETSPI_SR_INTID_Pos*/)  /*!< GICDistributor SETSPI_SR: INTID Mask */
+#define GICDistributor_SETSPI_SR_INTID(x)     (((uint32_t)(((uint32_t)(x)) /*<< GICDistributor_SETSPI_SR_INTID_Pos*/)) & GICDistributor_SETSPI_SR_INTID_Msk)
+
+/* GICDistributor CLRSPI_SR Register */
+#define GICDistributor_CLRSPI_SR_INTID_Pos    0U                                                  /*!< GICDistributor CLRSPI_SR: INTID Position */
+#define GICDistributor_CLRSPI_SR_INTID_Msk    (0x3FFU /*<< GICDistributor_CLRSPI_SR_INTID_Pos*/)  /*!< GICDistributor CLRSPI_SR: INTID Mask */
+#define GICDistributor_CLRSPI_SR_INTID(x)     (((uint32_t)(((uint32_t)(x)) /*<< GICDistributor_CLRSPI_SR_INTID_Pos*/)) & GICDistributor_CLRSPI_SR_INTID_Msk)
+
+/* GICDistributor ITARGETSR Register */
+#define GICDistributor_ITARGETSR_CPU0_Pos     0U                                                   /*!< GICDistributor ITARGETSR: CPU0 Position */
+#define GICDistributor_ITARGETSR_CPU0_Msk     (0x1U /*<< GICDistributor_ITARGETSR_CPU0_Pos*/)      /*!< GICDistributor ITARGETSR: CPU0 Mask */
+#define GICDistributor_ITARGETSR_CPU0(x)      (((uint8_t)(((uint8_t)(x)) /*<< GICDistributor_ITARGETSR_CPU0_Pos*/)) & GICDistributor_ITARGETSR_CPU0_Msk)
+
+#define GICDistributor_ITARGETSR_CPU1_Pos     1U                                                   /*!< GICDistributor ITARGETSR: CPU1 Position */
+#define GICDistributor_ITARGETSR_CPU1_Msk     (0x1U << GICDistributor_ITARGETSR_CPU1_Pos)          /*!< GICDistributor ITARGETSR: CPU1 Mask */
+#define GICDistributor_ITARGETSR_CPU1(x)      (((uint8_t)(((uint8_t)(x)) << GICDistributor_ITARGETSR_CPU1_Pos)) & GICDistributor_ITARGETSR_CPU1_Msk)
+
+#define GICDistributor_ITARGETSR_CPU2_Pos     2U                                                   /*!< GICDistributor ITARGETSR: CPU2 Position */
+#define GICDistributor_ITARGETSR_CPU2_Msk     (0x1U << GICDistributor_ITARGETSR_CPU2_Pos)          /*!< GICDistributor ITARGETSR: CPU2 Mask */
+#define GICDistributor_ITARGETSR_CPU2(x)      (((uint8_t)(((uint8_t)(x)) << GICDistributor_ITARGETSR_CPU2_Pos)) & GICDistributor_ITARGETSR_CPU2_Msk)
+
+#define GICDistributor_ITARGETSR_CPU3_Pos     3U                                                   /*!< GICDistributor ITARGETSR: CPU3 Position */
+#define GICDistributor_ITARGETSR_CPU3_Msk     (0x1U << GICDistributor_ITARGETSR_CPU3_Pos)          /*!< GICDistributor ITARGETSR: CPU3 Mask */
+#define GICDistributor_ITARGETSR_CPU3(x)      (((uint8_t)(((uint8_t)(x)) << GICDistributor_ITARGETSR_CPU3_Pos)) & GICDistributor_ITARGETSR_CPU3_Msk)
+
+#define GICDistributor_ITARGETSR_CPU4_Pos     4U                                                   /*!< GICDistributor ITARGETSR: CPU4 Position */
+#define GICDistributor_ITARGETSR_CPU4_Msk     (0x1U << GICDistributor_ITARGETSR_CPU4_Pos)          /*!< GICDistributor ITARGETSR: CPU4 Mask */
+#define GICDistributor_ITARGETSR_CPU4(x)      (((uint8_t)(((uint8_t)(x)) << GICDistributor_ITARGETSR_CPU4_Pos)) & GICDistributor_ITARGETSR_CPU4_Msk)
+
+#define GICDistributor_ITARGETSR_CPU5_Pos     5U                                                   /*!< GICDistributor ITARGETSR: CPU5 Position */
+#define GICDistributor_ITARGETSR_CPU5_Msk     (0x1U << GICDistributor_ITARGETSR_CPU5_Pos)          /*!< GICDistributor ITARGETSR: CPU5 Mask */
+#define GICDistributor_ITARGETSR_CPU5(x)      (((uint8_t)(((uint8_t)(x)) << GICDistributor_ITARGETSR_CPU5_Pos)) & GICDistributor_ITARGETSR_CPU5_Msk)
+
+#define GICDistributor_ITARGETSR_CPU6_Pos     6U                                                   /*!< GICDistributor ITARGETSR: CPU6 Position */
+#define GICDistributor_ITARGETSR_CPU6_Msk     (0x1U << GICDistributor_ITARGETSR_CPU6_Pos)          /*!< GICDistributor ITARGETSR: CPU6 Mask */
+#define GICDistributor_ITARGETSR_CPU6(x)      (((uint8_t)(((uint8_t)(x)) << GICDistributor_ITARGETSR_CPU6_Pos)) & GICDistributor_ITARGETSR_CPU6_Msk)
+
+#define GICDistributor_ITARGETSR_CPU7_Pos     7U                                                   /*!< GICDistributor ITARGETSR: CPU7 Position */
+#define GICDistributor_ITARGETSR_CPU7_Msk     (0x1U << GICDistributor_ITARGETSR_CPU7_Pos)          /*!< GICDistributor ITARGETSR: CPU7 Mask */
+#define GICDistributor_ITARGETSR_CPU7(x)      (((uint8_t)(((uint8_t)(x)) << GICDistributor_ITARGETSR_CPU7_Pos)) & GICDistributor_ITARGETSR_CPU7_Msk)
+
+/* GICDistributor SGIR Register */
+#define GICDistributor_SGIR_INTID_Pos         0U                                                   /*!< GICDistributor SGIR: INTID Position */
+#define GICDistributor_SGIR_INTID_Msk         (0xFU /*<< GICDistributor_SGIR_INTID_Pos*/)          /*!< GICDistributor SGIR: INTID Mask */
+#define GICDistributor_SGIR_INTID(x)          (((uint32_t)(((uint32_t)(x)) /*<< GICDistributor_SGIR_INTID_Pos*/)) & GICDistributor_SGIR_INTID_Msk)
+
+#define GICDistributor_SGIR_NSATT_Pos         15U                                                  /*!< GICDistributor SGIR: NSATT Position */
+#define GICDistributor_SGIR_NSATT_Msk         (0x1U << GICDistributor_SGIR_NSATT_Pos)              /*!< GICDistributor SGIR: NSATT Mask */
+#define GICDistributor_SGIR_NSATT(x)          (((uint32_t)(((uint32_t)(x)) << GICDistributor_SGIR_NSATT_Pos)) & GICDistributor_SGIR_NSATT_Msk)
+
+#define GICDistributor_SGIR_CPUTargetList_Pos 16U                                                  /*!< GICDistributor SGIR: CPUTargetList  Position */
+#define GICDistributor_SGIR_CPUTargetList_Msk (0xFFU << GICDistributor_SGIR_CPUTargetList_Pos)     /*!< GICDistributor SGIR: CPUTargetList  Mask */
+#define GICDistributor_SGIR_CPUTargetList(x)  (((uint32_t)(((uint32_t)(x)) << GICDistributor_SGIR_CPUTargetList_Pos)) & GICDistributor_SGIR_CPUTargetList_Msk)
+
+#define GICDistributor_SGIR_TargetFilterList_Pos 24U                                                /*!< GICDistributor SGIR: TargetFilterList Position */
+#define GICDistributor_SGIR_TargetFilterList_Msk (0x3U << GICDistributor_SGIR_TargetFilterList_Pos) /*!< GICDistributor SGIR: TargetFilterList Mask */
+#define GICDistributor_SGIR_TargetFilterList(x)  (((uint32_t)(((uint32_t)(x)) << GICDistributor_SGIR_TargetFilterList_Pos)) & GICDistributor_SGIR_TargetFilterList_Msk)
+
+/* GICDistributor IROUTER Register */
+#define GICDistributor_IROUTER_Aff0_Pos       0UL                                                  /*!< GICDistributor IROUTER: Aff0 Position */
+#define GICDistributor_IROUTER_Aff0_Msk       (0xFFUL /*<< GICDistributor_IROUTER_Aff0_Pos*/)      /*!< GICDistributor IROUTER: Aff0 Mask */
+#define GICDistributor_IROUTER_Aff0(x)        (((uint64_t)(((uint64_t)(x)) /*<< GICDistributor_IROUTER_Aff0_Pos*/)) & GICDistributor_IROUTER_Aff0_Msk)
+
+#define GICDistributor_IROUTER_Aff1_Pos       8UL                                                  /*!< GICDistributor IROUTER: Aff1 Position */
+#define GICDistributor_IROUTER_Aff1_Msk       (0xFFUL << GICDistributor_IROUTER_Aff1_Pos)          /*!< GICDistributor IROUTER: Aff1 Mask */
+#define GICDistributor_IROUTER_Aff1(x)        (((uint64_t)(((uint64_t)(x)) << GICDistributor_IROUTER_Aff1_Pos)) & GICDistributor_IROUTER_Aff1_Msk)
+
+#define GICDistributor_IROUTER_Aff2_Pos       16UL                                                 /*!< GICDistributor IROUTER: Aff2 Position */
+#define GICDistributor_IROUTER_Aff2_Msk       (0xFFUL << GICDistributor_IROUTER_Aff2_Pos)          /*!< GICDistributor IROUTER: Aff2 Mask */
+#define GICDistributor_IROUTER_Aff2(x)        (((uint64_t)(((uint64_t)(x)) << GICDistributor_IROUTER_Aff2_Pos)) & GICDistributor_IROUTER_Aff2_Msk)
+
+#define GICDistributor_IROUTER_IRM_Pos        31UL                                                 /*!< GICDistributor IROUTER: IRM Position */
+#define GICDistributor_IROUTER_IRM_Msk        (0xFFUL << GICDistributor_IROUTER_IRM_Pos)           /*!< GICDistributor IROUTER: IRM Mask */
+#define GICDistributor_IROUTER_IRM(x)         (((uint64_t)(((uint64_t)(x)) << GICDistributor_IROUTER_IRM_Pos)) & GICDistributor_IROUTER_IRM_Msk)
+
+#define GICDistributor_IROUTER_Aff3_Pos       32UL                                                 /*!< GICDistributor IROUTER: Aff3 Position */
+#define GICDistributor_IROUTER_Aff3_Msk       (0xFFUL << GICDistributor_IROUTER_Aff3_Pos)          /*!< GICDistributor IROUTER: Aff3 Mask */
+#define GICDistributor_IROUTER_Aff3(x)        (((uint64_t)(((uint64_t)(x)) << GICDistributor_IROUTER_Aff3_Pos)) & GICDistributor_IROUTER_Aff3_Msk)
+
+
+
 /** \brief  Structure type to access the Generic Interrupt Controller Interface (GICC)
 */
 typedef struct
@@ -809,9 +982,108 @@ typedef struct
 }  GICInterface_Type;
 
 #define GICInterface        ((GICInterface_Type        *)     GIC_INTERFACE_BASE )   /*!< \brief GIC Interface register set access pointer */
-#endif
 
-#if (__TIM_PRESENT == 1U) || defined(DOXYGEN)
+/* GICInterface CTLR Register */
+#define GICInterface_CTLR_Enable_Pos        0U                                              /*!< PTIM CTLR: Enable Position */
+#define GICInterface_CTLR_Enable_Msk        (0x1U /*<< GICInterface_CTLR_Enable_Pos*/)      /*!< PTIM CTLR: Enable Mask */
+#define GICInterface_CTLR_Enable(x)         (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_CTLR_Enable_Pos*/)) & GICInterface_CTLR_Enable_Msk)
+
+/* GICInterface PMR Register */
+#define GICInterface_PMR_Priority_Pos       0U                                              /*!< PTIM PMR: Priority Position */
+#define GICInterface_PMR_Priority_Msk       (0xFFU /*<< GICInterface_PMR_Priority_Pos*/)    /*!< PTIM PMR: Priority Mask */
+#define GICInterface_PMR_Priority(x)        (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_PMR_Priority_Pos*/)) & GICInterface_PMR_Priority_Msk)
+
+/* GICInterface BPR Register */
+#define GICInterface_BPR_Binary_Point_Pos   0U                                              /*!< PTIM BPR: Binary_Point Position */
+#define GICInterface_BPR_Binary_Point_Msk   (0x7U /*<< GICInterface_BPR_Binary_Point_Pos*/) /*!< PTIM BPR: Binary_Point Mask */
+#define GICInterface_BPR_Binary_Point(x)    (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_BPR_Binary_Point_Pos*/)) & GICInterface_BPR_Binary_Point_Msk)
+
+/* GICInterface IAR Register */
+#define GICInterface_IAR_INTID_Pos          0U                                              /*!< PTIM IAR: INTID Position */
+#define GICInterface_IAR_INTID_Msk          (0xFFFFFFU /*<< GICInterface_IAR_INTID_Pos*/)   /*!< PTIM IAR: INTID Mask */
+#define GICInterface_IAR_INTID(x)           (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_IAR_INTID_Pos*/)) & GICInterface_IAR_INTID_Msk)
+
+/* GICInterface EOIR Register */
+#define GICInterface_EOIR_INTID_Pos         0U                                              /*!< PTIM EOIR: INTID Position */
+#define GICInterface_EOIR_INTID_Msk         (0xFFFFFFU /*<< GICInterface_EOIR_INTID_Pos*/)  /*!< PTIM EOIR: INTID Mask */
+#define GICInterface_EOIR_INTID(x)          (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_EOIR_INTID_Pos*/)) & GICInterface_EOIR_INTID_Msk)
+
+/* GICInterface RPR Register */
+#define GICInterface_RPR_INTID_Pos          0U                                              /*!< PTIM RPR: INTID Position */
+#define GICInterface_RPR_INTID_Msk          (0xFFU /*<< GICInterface_RPR_INTID_Pos*/)       /*!< PTIM RPR: INTID Mask */
+#define GICInterface_RPR_INTID(x)           (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_RPR_INTID_Pos*/)) & GICInterface_RPR_INTID_Msk)
+
+/* GICInterface HPPIR Register */
+#define GICInterface_HPPIR_INTID_Pos        0U                                               /*!< PTIM HPPIR: INTID Position */
+#define GICInterface_HPPIR_INTID_Msk        (0x3FFU /*<< GICInterface_HPPIR_INTID_Pos*/)  /*!< PTIM HPPIR: INTID Mask */
+#define GICInterface_HPPIR_INTID(x)         (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_HPPIR_INTID_Pos*/)) & GICInterface_HPPIR_INTID_Msk)
+
+/* GICInterface ABPR Register */
+#define GICInterface_ABPR_Binary_Point_Pos  0U                                               /*!< PTIM ABPR: Binary_Point Position */
+#define GICInterface_ABPR_Binary_Point_Msk  (0x7U /*<< GICInterface_ABPR_Binary_Point_Pos*/) /*!< PTIM ABPR: Binary_Point Mask */
+#define GICInterface_ABPR_Binary_Point(x)   (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_ABPR_Binary_Point_Pos*/)) & GICInterface_ABPR_Binary_Point_Msk)
+
+/* GICInterface AIAR Register */
+#define GICInterface_AIAR_INTID_Pos         0U                                              /*!< PTIM AIAR: INTID Position */
+#define GICInterface_AIAR_INTID_Msk         (0xFFFFFFU /*<< GICInterface_AIAR_INTID_Pos*/)  /*!< PTIM AIAR: INTID Mask */
+#define GICInterface_AIAR_INTID(x)          (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_AIAR_INTID_Pos*/)) & GICInterface_AIAR_INTID_Msk)
+
+/* GICInterface AEOIR Register */
+#define GICInterface_AEOIR_INTID_Pos        0U                                              /*!< PTIM AEOIR: INTID Position */
+#define GICInterface_AEOIR_INTID_Msk        (0xFFFFFFU /*<< GICInterface_AEOIR_INTID_Pos*/) /*!< PTIM AEOIR: INTID Mask */
+#define GICInterface_AEOIR_INTID(x)         (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_AEOIR_INTID_Pos*/)) & GICInterface_AEOIR_INTID_Msk)
+
+/* GICInterface AHPPIR Register */
+#define GICInterface_AHPPIR_INTID_Pos       0U                                               /*!< PTIM AHPPIR: INTID Position */
+#define GICInterface_AHPPIR_INTID_Msk       (0xFFFFFFU /*<< GICInterface_AHPPIR_INTID_Pos*/) /*!< PTIM AHPPIR: INTID Mask */
+#define GICInterface_AHPPIR_INTID(x)        (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_AHPPIR_INTID_Pos*/)) & GICInterface_AHPPIR_INTID_Msk)
+
+/* GICInterface STATUSR Register */
+#define GICInterface_STATUSR_RRD_Pos        0U                                              /*!< GICInterface STATUSR: RRD Position */
+#define GICInterface_STATUSR_RRD_Msk        (0x1U /*<< GICInterface_STATUSR_RRD_Pos*/)      /*!< GICInterface STATUSR: RRD Mask */
+#define GICInterface_STATUSR_RRD(x)         (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_STATUSR_RRD_Pos*/)) & GICInterface_STATUSR_RRD_Msk)
+
+#define GICInterface_STATUSR_WRD_Pos        1U                                              /*!< GICInterface STATUSR: WRD Position */
+#define GICInterface_STATUSR_WRD_Msk        (0x1U << GICInterface_STATUSR_WRD_Pos)          /*!< GICInterface STATUSR: WRD Mask */
+#define GICInterface_STATUSR_WRD(x)         (((uint32_t)(((uint32_t)(x)) << GICInterface_STATUSR_WRD_Pos)) & GICInterface_STATUSR_WRD_Msk)
+
+#define GICInterface_STATUSR_RWOD_Pos       2U                                              /*!< GICInterface STATUSR: RWOD Position */
+#define GICInterface_STATUSR_RWOD_Msk       (0x1U << GICInterface_STATUSR_RWOD_Pos)         /*!< GICInterface STATUSR: RWOD Mask */
+#define GICInterface_STATUSR_RWOD(x)        (((uint32_t)(((uint32_t)(x)) << GICInterface_STATUSR_RWOD_Pos)) & GICInterface_STATUSR_RWOD_Msk)
+
+#define GICInterface_STATUSR_WROD_Pos       3U                                              /*!< GICInterface STATUSR: WROD Position */
+#define GICInterface_STATUSR_WROD_Msk       (0x1U << GICInterface_STATUSR_WROD_Pos)         /*!< GICInterface STATUSR: WROD Mask */
+#define GICInterface_STATUSR_WROD(x)        (((uint32_t)(((uint32_t)(x)) << GICInterface_STATUSR_WROD_Pos)) & GICInterface_STATUSR_WROD_Msk)
+
+#define GICInterface_STATUSR_ASV_Pos        4U                                              /*!< GICInterface STATUSR: ASV Position */
+#define GICInterface_STATUSR_ASV_Msk        (0x1U << GICInterface_STATUSR_ASV_Pos)          /*!< GICInterface STATUSR: ASV Mask */
+#define GICInterface_STATUSR_ASV(x)         (((uint32_t)(((uint32_t)(x)) << GICInterface_STATUSR_ASV_Pos)) & GICInterface_STATUSR_ASV_Msk)
+
+/* GICInterface IIDR Register */
+#define GICInterface_IIDR_Implementer_Pos   0U                                                 /*!< GICInterface IIDR: Implementer Position */
+#define GICInterface_IIDR_Implementer_Msk   (0xFFFU /*<< GICInterface_IIDR_Implementer_Pos*/)  /*!< GICInterface IIDR: Implementer Mask */
+#define GICInterface_IIDR_Implementer(x)    (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_IIDR_Implementer_Pos*/)) & GICInterface_IIDR_Implementer_Msk)
+
+#define GICInterface_IIDR_Revision_Pos      12U                                             /*!< GICInterface IIDR: Revision Position */
+#define GICInterface_IIDR_Revision_Msk      (0xFU << GICInterface_IIDR_Revision_Pos)        /*!< GICInterface IIDR: Revision Mask */
+#define GICInterface_IIDR_Revision(x)       (((uint32_t)(((uint32_t)(x)) << GICInterface_IIDR_Revision_Pos)) & GICInterface_IIDR_Revision_Msk)
+
+#define GICInterface_IIDR_Arch_version_Pos  16U                                             /*!< GICInterface IIDR: Arch_version Position */
+#define GICInterface_IIDR_Arch_version_Msk  (0xFU << GICInterface_IIDR_Arch_version_Pos)    /*!< GICInterface IIDR: Arch_version Mask */
+#define GICInterface_IIDR_Arch_version(x)   (((uint32_t)(((uint32_t)(x)) << GICInterface_IIDR_Arch_version_Pos)) & GICInterface_IIDR_Arch_version_Msk)
+
+#define GICInterface_IIDR_ProductID_Pos     20U                                             /*!< GICInterface IIDR: ProductID Position */
+#define GICInterface_IIDR_ProductID_Msk     (0xFFFU << GICInterface_IIDR_ProductID_Pos)     /*!< GICInterface IIDR: ProductID Mask */
+#define GICInterface_IIDR_ProductID(x)      (((uint32_t)(((uint32_t)(x)) << GICInterface_IIDR_ProductID_Pos)) & GICInterface_IIDR_ProductID_Msk)
+
+/* GICInterface DIR Register */
+#define GICInterface_DIR_INTID_Pos          0U                                              /*!< GICInterface DIR: INTID Position */
+#define GICInterface_DIR_INTID_Msk          (0xFFFFFFU /*<< GICInterface_DIR_INTID_Pos*/)   /*!< GICInterface DIR: INTID Mask */
+#define GICInterface_DIR_INTID(x)           (((uint32_t)(((uint32_t)(x)) /*<< GICInterface_DIR_INTID_Pos*/)) & GICInterface_DIR_INTID_Msk)
+#endif /*  (__GIC_PRESENT == 1U) || defined(DOXYGEN) */
+
+#if (defined(__TIM_PRESENT) && (__TIM_PRESENT == 1U)) || \
+     defined(DOXYGEN)
 #if ((__CORTEX_A == 5U) || (__CORTEX_A == 9U)) || defined(DOXYGEN)
 /** \brief Structure type to access the Private Timer
 */
@@ -830,19 +1102,68 @@ typedef struct
   __OM  uint32_t WDISABLE;        //!< \brief  Offset: 0x034 ( /W) Watchdog Disable Register
 } Timer_Type;
 #define PTIM ((Timer_Type *) TIMER_BASE )   /*!< \brief Timer register struct */
-#endif
-#endif
+
+/* PTIM Control Register */
+#define PTIM_CONTROL_Enable_Pos             0U                                         /*!< PTIM CONTROL: Enable Position */
+#define PTIM_CONTROL_Enable_Msk             (0x1U /*<< PTIM_CONTROL_Enable_Pos*/)      /*!< PTIM CONTROL: Enable Mask */
+#define PTIM_CONTROL_Enable(x)              (((uint32_t)(((uint32_t)(x)) /*<< PTIM_CONTROL_Enable_Pos*/)) & PTIM_CONTROL_Enable_Msk)
+
+#define PTIM_CONTROL_AutoReload_Pos         1U                                         /*!< PTIM CONTROL: Auto Reload Position */
+#define PTIM_CONTROL_AutoReload_Msk         (0x1U << PTIM_CONTROL_AutoReload_Pos)      /*!< PTIM CONTROL: Auto Reload Mask */
+#define PTIM_CONTROL_AutoReload(x)          (((uint32_t)(((uint32_t)(x)) << PTIM_CONTROL_AutoReload_Pos)) & PTIM_CONTROL_AutoReload_Msk)
+
+#define PTIM_CONTROL_IRQenable_Pos          2U                                         /*!< PTIM CONTROL: IRQ Enabel Position */
+#define PTIM_CONTROL_IRQenable_Msk          (0x1U << PTIM_CONTROL_IRQenable_Pos)       /*!< PTIM CONTROL: IRQ Enabel Mask */
+#define PTIM_CONTROL_IRQenable(x)           (((uint32_t)(((uint32_t)(x)) << PTIM_CONTROL_IRQenable_Pos)) & PTIM_CONTROL_IRQenable_Msk)
+
+#define PTIM_CONTROL_Prescaler_Pos          8U                                         /*!< PTIM CONTROL: Prescaler Position */
+#define PTIM_CONTROL_Prescaler_Msk          (0xFFU << PTIM_CONTROL_Prescaler_Pos)      /*!< PTIM CONTROL: Prescaler Mask */
+#define PTIM_CONTROL_Prescaler(x)           (((uint32_t)(((uint32_t)(x)) << PTIM_CONTROL_Prescaler_Pos)) & PTIM_CONTROL_Prescaler_Msk)
+
+/* WCONTROL Watchdog Control Register */
+#define PTIM_WCONTROL_Enable_Pos            0U                                         /*!< PTIM WCONTROL: Enable Position */
+#define PTIM_WCONTROL_Enable_Msk            (0x1U /*<< PTIM_WCONTROL_Enable_Pos*/)     /*!< PTIM WCONTROL: Enable Mask */
+#define PTIM_WCONTROL_Enable(x)             (((uint32_t)(((uint32_t)(x)) /*<< PTIM_WCONTROL_Enable_Pos*/)) & PTIM_WCONTROL_Enable_Msk)
+
+#define PTIM_WCONTROL_AutoReload_Pos        1U                                         /*!< PTIM WCONTROL: Auto Reload Position */
+#define PTIM_WCONTROL_AutoReload_Msk        (0x1U << PTIM_WCONTROL_AutoReload_Pos)     /*!< PTIM WCONTROL: Auto Reload Mask */
+#define PTIM_WCONTROL_AutoReload(x)         (((uint32_t)(((uint32_t)(x)) << PTIM_WCONTROL_AutoReload_Pos)) & PTIM_WCONTROL_AutoReload_Msk)
+
+#define PTIM_WCONTROL_IRQenable_Pos         2U                                         /*!< PTIM WCONTROL: IRQ Enable Position */
+#define PTIM_WCONTROL_IRQenable_Msk         (0x1U << PTIM_WCONTROL_IRQenable_Pos)      /*!< PTIM WCONTROL: IRQ Enable Mask */
+#define PTIM_WCONTROL_IRQenable(x)          (((uint32_t)(((uint32_t)(x)) << PTIM_WCONTROL_IRQenable_Pos)) & PTIM_WCONTROL_IRQenable_Msk)
+
+#define PTIM_WCONTROL_Mode_Pos              3U                                         /*!< PTIM WCONTROL: Watchdog Mode Position */
+#define PTIM_WCONTROL_Mode_Msk              (0x1U << PTIM_WCONTROL_Mode_Pos)           /*!< PTIM WCONTROL: Watchdog Mode Mask */
+#define PTIM_WCONTROL_Mode(x)               (((uint32_t)(((uint32_t)(x)) << PTIM_WCONTROL_Mode_Pos)) & PTIM_WCONTROL_Mode_Msk)
+
+#define PTIM_WCONTROL_Presacler_Pos         8U                                         /*!< PTIM WCONTROL: Prescaler Position */
+#define PTIM_WCONTROL_Presacler_Msk         (0xFFU << PTIM_WCONTROL_Presacler_Pos)     /*!< PTIM WCONTROL: Prescaler Mask */
+#define PTIM_WCONTROL_Presacler(x)          (((uint32_t)(((uint32_t)(x)) << PTIM_WCONTROL_Presacler_Pos)) & PTIM_WCONTROL_Presacler_Msk)
+
+/* WISR Watchdog Interrupt Status Register */
+#define PTIM_WISR_EventFlag_Pos             0U                                         /*!< PTIM WISR: Event Flag Position */
+#define PTIM_WISR_EventFlag_Msk             (0x1U /*<< PTIM_WISR_EventFlag_Pos*/)      /*!< PTIM WISR: Event Flag Mask */
+#define PTIM_WISR_EventFlag(x)              (((uint32_t)(((uint32_t)(x)) /*<< PTIM_WISR_EventFlag_Pos*/)) & PTIM_WISR_EventFlag_Msk)
+
+/* WRESET Watchdog Reset Status */
+#define PTIM_WRESET_ResetFlag_Pos           0U                                         /*!< PTIM WRESET: Reset Flag Position */
+#define PTIM_WRESET_ResetFlag_Msk           (0x1U /*<< PTIM_WRESET_ResetFlag_Pos*/)    /*!< PTIM WRESET: Reset Flag Mask */
+#define PTIM_WRESET_ResetFlag(x)            (((uint32_t)(((uint32_t)(x)) /*<< PTIM_WRESET_ResetFlag_Pos*/)) & PTIM_WRESET_ResetFlag_Msk)
+
+#endif /* ((__CORTEX_A == 5U) || (__CORTEX_A == 9U)) || defined(DOXYGEN) */
+#endif /* (__TIM_PRESENT == 1U) || defined(DOXYGEN) */
 
  /*******************************************************************************
   *                Hardware Abstraction Layer
    Core Function Interface contains:
    - L1 Cache Functions
-   - L2C-310 Cache Controller Functions 
+   - L2C-310 Cache Controller Functions
    - PL1 Timer Functions
    - GIC Functions
    - MMU Functions
   ******************************************************************************/
- 
+
 /* ##########################  L1 Cache functions  ################################# */
 
 /** \brief Enable Caches by setting I and C bits in SCTLR register.
@@ -879,6 +1200,15 @@ __STATIC_FORCEINLINE void L1C_InvalidateBTAC(void) {
   __set_BPIALL(0);
   __DSB();     //ensure completion of the invalidation
   __ISB();     //ensure instruction fetch path sees new state
+}
+
+/** \brief  Clean instruction cache line by address.
+* \param [in] va Pointer to instructions to clear the cache for.
+*/
+__STATIC_FORCEINLINE void L1C_InvalidateICacheMVA(void *va) {
+  __set_ICIMVAC((uint32_t)va);
+  __DSB();     //ensure completion of the invalidation
+  __ISB();     //ensure instruction fetch path sees new I cache state
 }
 
 /** \brief  Invalidate the whole instruction cache
@@ -924,7 +1254,7 @@ __STATIC_FORCEINLINE void L1C_CleanInvalidateDCacheMVA(void *va) {
 *  - log(16) => 4
 *  - log(32) => 5
 *        :      :
-* \param [in] n input value parameter 
+* \param [in] n input value parameter
 * \return log2(n)
 */
 __STATIC_FORCEINLINE uint8_t __log2_up(uint32_t n)
@@ -955,7 +1285,7 @@ __STATIC_FORCEINLINE void __L1C_MaintainDCacheSetWay(uint32_t level, uint32_t ma
   uint32_t num_ways;
   uint32_t shift_way;
   uint32_t log2_linesize;
-   int32_t log2_num_ways;
+   uint8_t log2_num_ways;
 
   Dummy = level << 1U;
   /* set csselr, select ccsidr register */
@@ -966,10 +1296,10 @@ __STATIC_FORCEINLINE void __L1C_MaintainDCacheSetWay(uint32_t level, uint32_t ma
   num_ways = ((ccsidr & 0x00001FF8U) >> 3U) + 1U;
   log2_linesize = (ccsidr & 0x00000007U) + 2U + 2U;
   log2_num_ways = __log2_up(num_ways);
-  if ((log2_num_ways < 0) || (log2_num_ways > 32)) {
+  if (log2_num_ways > 32U) {
     return; // FATAL ERROR
   }
-  shift_way = 32U - (uint32_t)log2_num_ways;
+  shift_way = 32U - log2_num_ways;
   for(int32_t way = num_ways-1; way >= 0; way--)
   {
     for(int32_t set = num_sets-1; set >= 0; set--)
@@ -987,7 +1317,6 @@ __STATIC_FORCEINLINE void __L1C_MaintainDCacheSetWay(uint32_t level, uint32_t ma
 }
 
 /** \brief  Clean and Invalidate the entire data or unified cache
-* Generic mechanism for cleaning/invalidating the entire data or unified cache to the point of coherency
 * \param [in] op 0 - invalidate, 1 - clean, otherwise - invalidate and clean
 */
 __STATIC_FORCEINLINE void L1C_CleanInvalidateCache(uint32_t op) {
@@ -1002,16 +1331,6 @@ __STATIC_FORCEINLINE void L1C_CleanInvalidateCache(uint32_t op) {
       __L1C_MaintainDCacheSetWay(i, op);
     }
   }
-}
-
-/** \brief  Clean and Invalidate the entire data or unified cache
-* Generic mechanism for cleaning/invalidating the entire data or unified cache to the point of coherency
-* \param [in] op 0 - invalidate, 1 - clean, otherwise - invalidate and clean
-* \deprecated Use generic L1C_CleanInvalidateCache instead.
-*/
-CMSIS_DEPRECATED
-__STATIC_FORCEINLINE void __L1C_CleanInvalidateCache(uint32_t op) {
-  L1C_CleanInvalidateCache(op);
 }
 
 /** \brief  Invalidate the whole data cache.
@@ -1033,7 +1352,8 @@ __STATIC_FORCEINLINE void L1C_CleanInvalidateDCacheAll(void) {
 }
 
 /* ##########################  L2 Cache functions  ################################# */
-#if (__L2C_PRESENT == 1U) || defined(DOXYGEN)
+#if (defined(__L2C_PRESENT) && (__L2C_PRESENT == 1U)) || \
+     defined(DOXYGEN)
 /** \brief Cache Sync operation by writing CACHE_SYNC register.
 */
 __STATIC_INLINE void L2C_Sync(void)
@@ -1068,7 +1388,7 @@ __STATIC_INLINE void L2C_InvAllByWay (void)
   } else {
     assoc =  8U;
   }
-  
+
   L2C_310->INV_WAY = (1U << assoc) - 1U;
   while(L2C_310->INV_WAY & ((1U << assoc) - 1U)); //poll invalidate
 
@@ -1143,8 +1463,9 @@ __STATIC_INLINE void L2C_CleanInvPa (void *pa)
 #endif
 
 /* ##########################  GIC functions  ###################################### */
-#if (__GIC_PRESENT == 1U) || defined(DOXYGEN)
-  
+#if (defined(__GIC_PRESENT) && (__GIC_PRESENT == 1U)) || \
+     defined(DOXYGEN)
+
 /** \brief  Enable the interrupt distributor using the GIC's CTLR register.
 */
 __STATIC_INLINE void GIC_EnableDistributor(void)
@@ -1307,13 +1628,14 @@ __STATIC_INLINE void GIC_ClearPendingIRQ(IRQn_Type IRQn)
 */
 __STATIC_INLINE void GIC_SetConfiguration(IRQn_Type IRQn, uint32_t int_config)
 {
-  uint32_t icfgr = GICDistributor->ICFGR[IRQn / 16U];
-  uint32_t shift = (IRQn % 16U) << 1U;
+  uint32_t icfgr = GICDistributor->ICFGR[IRQn / 16U];  /* read current register content */
+  uint32_t shift = (IRQn % 16U) << 1U;                 /* calculate shift value */
 
-  icfgr &= (~(3U         << shift));
-  icfgr |= (  int_config << shift);
+  int_config &= 3U;                                    /* only 2 bits are valid */
+  icfgr &= (~(3U         << shift));                   /* clear bits to change */
+  icfgr |= (  int_config << shift);                    /* set new configuration */
 
-  GICDistributor->ICFGR[IRQn / 16U] = icfgr;
+  GICDistributor->ICFGR[IRQn / 16U] = icfgr;           /* write new register content */
 }
 
 /** \brief Get the interrupt configuration from the GIC's ICFGR register.
@@ -1323,7 +1645,7 @@ __STATIC_INLINE void GIC_SetConfiguration(IRQn_Type IRQn, uint32_t int_config)
 */
 __STATIC_INLINE uint32_t GIC_GetConfiguration(IRQn_Type IRQn)
 {
-  return (GICDistributor->ICFGR[IRQn / 16U] >> ((IRQn % 16U) >> 1U));
+  return (GICDistributor->ICFGR[IRQn / 16U] >> ((IRQn % 16U) << 1U)) & 3UL;
 }
 
 /** \brief Set the priority for the given interrupt in the GIC's IPRIORITYR register.
@@ -1403,17 +1725,17 @@ __STATIC_INLINE void GIC_SendSGI(IRQn_Type IRQn, uint32_t target_list, uint32_t 
 /** \brief Get the interrupt number of the highest interrupt pending from CPU's HPPIR register.
 * \return GICInterface_Type::HPPIR
 */
-__STATIC_INLINE uint32_t GIC_GetHighPendingIRQ(void) 
-{ 
-  return GICInterface->HPPIR; 
+__STATIC_INLINE uint32_t GIC_GetHighPendingIRQ(void)
+{
+  return GICInterface->HPPIR;
 }
 
 /** \brief Provides information about the implementer and revision of the CPU interface.
 * \return GICInterface_Type::IIDR
 */
 __STATIC_INLINE uint32_t GIC_GetInterfaceId(void)
-{ 
-  return GICInterface->IIDR; 
+{
+  return GICInterface->IIDR;
 }
 
 /** \brief Set the interrupt group from the GIC's IGROUPR register.
@@ -1528,11 +1850,12 @@ __STATIC_INLINE void GIC_Enable(void)
 #endif
 
 /* ##########################  Generic Timer functions  ############################ */
-#if (__TIM_PRESENT == 1U) || defined(DOXYGEN)
-  
+#if (defined(__TIM_PRESENT) && (__TIM_PRESENT == 1U)) || \
+    defined(DOXYGEN)
+
 /* PL1 Physical Timer */
 #if (__CORTEX_A == 7U) || defined(DOXYGEN)
-  
+
 /** \brief Physical Timer Control register */
 typedef union
 {
@@ -1613,6 +1936,69 @@ __STATIC_INLINE uint32_t PL1_GetControl(void)
 {
   return(__get_CNTP_CTL());
 }
+
+/******************************* VIRTUAL TIMER *******************************/
+/** \brief Virtual Timer Control register */
+
+/** \brief Sets the reset value of the virtual timer.
+* \param [in] value The value the virtual timer is loaded with.
+*/
+__STATIC_INLINE void VL1_SetCurrentTimerValue(uint32_t value)
+{
+  __set_CNTV_TVAL(value);
+  __ISB();
+}
+
+/** \brief Get the current virtual timer value.
+* \return Current virtual timer value.
+*/
+__STATIC_INLINE uint32_t VL1_GetCurrentTimerValue(void)
+{
+  return(__get_CNTV_TVAL());
+}
+
+/** \brief Get the current virtual count value.
+* \return Current virtual count value.
+*/
+__STATIC_INLINE uint64_t VL1_GetCurrentCountValue(void)
+{
+  return(__get_CNTVCT());
+}
+
+/** \brief Set the virtual timer compare value.
+* \param [in] value New virtual timer compare value.
+*/
+__STATIC_INLINE void VL1_SetTimerCompareValue(uint64_t value)
+{
+  __set_CNTV_CVAL(value);
+  __ISB();
+}
+
+/** \brief Get the virtual timer compare value.
+* \return Virtual timer compare value.
+*/
+__STATIC_INLINE uint64_t VL1_GetTimerCompareValue(void)
+{
+  return(__get_CNTV_CVAL());
+}
+
+/** \brief Configure the virtual timer by setting the control value.
+* \param [in] value New virtual timer control value.
+*/
+__STATIC_INLINE void VL1_SetControl(uint32_t value)
+{
+  __set_CNTV_CTL(value);
+  __ISB();
+}
+
+/** \brief Get the virtual timer control value.
+* \return Virtual timer control value.
+*/
+__STATIC_INLINE uint32_t VL1_GetControl(void)
+{
+  return(__get_CNTV_CTL());
+}
+/***************************** VIRTUAL TIMER END *****************************/
 #endif
 
 /* Private Timer */
@@ -2314,7 +2700,7 @@ __STATIC_INLINE int MMU_MemorySection(uint32_t *descriptor_l1, mmu_memory_Type m
         *descriptor_l1 |= 1 << SECTION_TEX1_SHIFT;
         break;
       case WB_NO_WA:
-        *descriptor_l1 |= (1 << SECTION_TEX0_SHIFT) | (1 << SECTION_TEX0_SHIFT);
+        *descriptor_l1 |= (1 << SECTION_TEX1_SHIFT) | (1 << SECTION_TEX0_SHIFT);
         break;
     }
   }
@@ -2382,7 +2768,7 @@ __STATIC_INLINE int MMU_MemoryPage(uint32_t *descriptor_l2, mmu_memory_Type mem,
           *descriptor_l2 |= 1 << PAGE_4K_TEX1_SHIFT;
           break;
         case WB_NO_WA:
-          *descriptor_l2 |= (1 << PAGE_4K_TEX0_SHIFT) | (1 << PAGE_4K_TEX0_SHIFT);
+          *descriptor_l2 |= (1 << PAGE_4K_TEX1_SHIFT) | (1 << PAGE_4K_TEX0_SHIFT);
           break;
       }
     }
@@ -2395,7 +2781,7 @@ __STATIC_INLINE int MMU_MemoryPage(uint32_t *descriptor_l2, mmu_memory_Type mem,
 
   \param [out]     descriptor  L1 descriptor
   \param [in]      reg  Section attributes
-  
+
   \return          0
 */
 __STATIC_INLINE int MMU_GetSectionDescriptor(uint32_t *descriptor, mmu_region_attributes_Type reg)
@@ -2406,13 +2792,13 @@ __STATIC_INLINE int MMU_GetSectionDescriptor(uint32_t *descriptor, mmu_region_at
   MMU_XNSection(descriptor,reg.xn_t);
   MMU_DomainSection(descriptor, reg.domain);
   MMU_PSection(descriptor, reg.e_t);
-  MMU_APSection(descriptor, reg.priv_t, reg.user_t, 1);
+  MMU_APSection(descriptor, reg.user_t, reg.priv_t, 1);
   MMU_SharedSection(descriptor,reg.sh_t);
   MMU_GlobalSection(descriptor,reg.g_t);
   MMU_SecureSection(descriptor,reg.sec_t);
   *descriptor &= SECTION_MASK;
   *descriptor |= SECTION_DESCRIPTOR;
- 
+
   return 0;
 }
 
@@ -2437,7 +2823,7 @@ __STATIC_INLINE int MMU_GetPageDescriptor(uint32_t *descriptor, uint32_t *descri
       MMU_XNPage(descriptor2, reg.xn_t, PAGE_4k);
       MMU_DomainPage(descriptor, reg.domain);
       MMU_PPage(descriptor, reg.e_t);
-      MMU_APPage(descriptor2, reg.priv_t, reg.user_t, 1);
+      MMU_APPage(descriptor2, reg.user_t, reg.priv_t, 1);
       MMU_SharedPage(descriptor2,reg.sh_t);
       MMU_GlobalPage(descriptor2,reg.g_t);
       MMU_SecurePage(descriptor,reg.sec_t);
@@ -2452,7 +2838,7 @@ __STATIC_INLINE int MMU_GetPageDescriptor(uint32_t *descriptor, uint32_t *descri
       MMU_XNPage(descriptor2, reg.xn_t, PAGE_64k);
       MMU_DomainPage(descriptor, reg.domain);
       MMU_PPage(descriptor, reg.e_t);
-      MMU_APPage(descriptor2, reg.priv_t, reg.user_t, 1);
+      MMU_APPage(descriptor2, reg.user_t, reg.priv_t, 1);
       MMU_SharedPage(descriptor2,reg.sh_t);
       MMU_GlobalPage(descriptor2,reg.g_t);
       MMU_SecurePage(descriptor,reg.sec_t);
@@ -2466,7 +2852,7 @@ __STATIC_INLINE int MMU_GetPageDescriptor(uint32_t *descriptor, uint32_t *descri
       //error
       break;
   }
-  
+
   return 0;
 }
 

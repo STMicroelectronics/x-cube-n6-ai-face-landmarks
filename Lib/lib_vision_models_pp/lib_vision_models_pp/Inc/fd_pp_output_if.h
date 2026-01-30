@@ -11,9 +11,10 @@
 #define __FD_PP_INTERFACE_IF_H__
 
 /* Error return codes */
-#define AI_FD_PP_ERROR_NO     (0)
-#define AI_FD_PP_ERROR_BAD_HW (-1)
-#define AI_FD_PP_ERROR        (-2)
+#define AI_FD_PP_ERROR_NO        (0)
+#define AI_FD_PP_ERROR_BAD_HW    (-1)
+#define AI_FD_PP_ERROR           (-2)
+#define AI_FD_PP_ERROR_TRUNCATED (-3)
 
 #ifdef __cplusplus
  extern "C" {

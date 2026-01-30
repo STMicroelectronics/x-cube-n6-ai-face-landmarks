@@ -37,6 +37,15 @@
 #include "stm32n6xx_hal_rif.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "stai_face_detector.h"
+#include "stai_face_landmark.h"
+
+#ifndef APP_GIT_SHA1_STRING
+#define APP_GIT_SHA1_STRING "dev"
+#endif
+#ifndef APP_VERSION_STRING
+#define APP_VERSION_STRING "unversioned"
+#endif
 
 UART_HandleTypeDef huart1;
 GPU2D_HandleTypeDef hgpu2d;
@@ -109,7 +118,6 @@ static void NPURam_enable()
 
 static void NPUCache_config()
 {
-  npu_cache_init();
   npu_cache_enable();
 }
 
@@ -393,6 +401,23 @@ static void main_thread_fct(void *arg)
   LL_APB5_GRP1_EnableClockLowPower(~0);
   LL_MISC_EnableClockLowPower(~0);
 
+  /*** App header *************************************************************/
+  printf("========================================\n");
+  printf("x-cube-n6-ai-face-landmarks %s (%s)\n", APP_VERSION_STRING, APP_GIT_SHA1_STRING);
+  printf("Build date & time: %s %s\n", __DATE__, __TIME__);
+  #if defined(__GNUC__)
+  printf("Compiler: GCC %d.%d.%d\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+#elif defined(__ICCARM__)
+  printf("Compiler: IAR EWARM %d.%d.%d\n", __VER__ / 1000000, (__VER__ / 1000) % 1000 ,__VER__ % 1000);
+#else
+  printf("Compiler: Unknown\n");
+#endif
+  printf("HAL: %lu.%lu.%lu\n", __STM32N6xx_HAL_VERSION_MAIN, __STM32N6xx_HAL_VERSION_SUB1, __STM32N6xx_HAL_VERSION_SUB2);
+  printf("STEdgeAI Tools: %d.%d.%d\n", STAI_TOOLS_VERSION_MAJOR, STAI_TOOLS_VERSION_MINOR, STAI_TOOLS_VERSION_MICRO);
+  printf("Face detection model: %s\n", STAI_FACE_DETECTOR_ORIGIN_MODEL_NAME);
+  printf("Face landmarks model: %s\n", STAI_FACE_LANDMARK_ORIGIN_MODEL_NAME);
+  printf("========================================\n");
+
   app_run();
 
   vTaskDelete(NULL);
@@ -421,7 +446,7 @@ HAL_StatusTypeDef MX_DCMIPP_ClockConfig(DCMIPP_HandleTypeDef *hdcmipp)
   return HAL_OK;
 }
 
-void HAL_CACHEAXI_MspInit(CACHEAXI_HandleTypeDef *hcacheaxi)
+void npu_cache_enable_clocks_and_reset(void)
 {
   __HAL_RCC_CACHEAXIRAM_MEM_CLK_ENABLE();
   __HAL_RCC_CACHEAXI_CLK_ENABLE();
@@ -429,7 +454,7 @@ void HAL_CACHEAXI_MspInit(CACHEAXI_HandleTypeDef *hcacheaxi)
   __HAL_RCC_CACHEAXI_RELEASE_RESET();
 }
 
-void HAL_CACHEAXI_MspDeInit(CACHEAXI_HandleTypeDef *hcacheaxi)
+void npu_cache_disable_clocks_and_reset(void)
 {
   __HAL_RCC_CACHEAXIRAM_MEM_CLK_DISABLE();
   __HAL_RCC_CACHEAXI_CLK_DISABLE();

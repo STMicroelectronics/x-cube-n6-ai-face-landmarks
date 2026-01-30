@@ -24,10 +24,12 @@
 #if POSTPROCESS_TYPE == POSTPROCESS_OD_BLAZEFACE_UF
 #include "fd_blazeface_anchors_0.h"
 #include "fd_blazeface_anchors_1.h"
+#ifndef MAX
 #define MAX(a,b) (((a)>(b))?(a):(b))
+#endif
 static od_pp_outBuffer_t out_detections[MAX(AI_OD_BLAZEFACE_PP_MAX_BOXES_LIMIT, AI_OD_BLAZEFACE_PP_OUT_0_NB_BOXES + AI_OD_BLAZEFACE_PP_OUT_1_NB_BOXES)];
 
-int32_t app_postprocess_init(void *params_postprocess, NN_Instance_TypeDef *NN_Instance)
+int32_t app_postprocess_init(void *params_postprocess, stai_network_info *NN_Info)
 {
   int32_t error = AI_OD_POSTPROCESS_ERROR_NO;
   od_blazeface_pp_static_param_t *params = (od_blazeface_pp_static_param_t *) params_postprocess;

@@ -1,3 +1,20 @@
+/**
+ ******************************************************************************
+ * @file    scrl_common.c
+ * @author  MDG Application Team
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2024 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
+
 #include "scrl_common.h"
 
 #include <assert.h>
@@ -180,7 +197,6 @@ static int32_t SPI_FillRectBpp3(uint32_t Instance, uint32_t Xpos, uint32_t Ypos,
   pel += (Ypos * layer_width * 3) + Xpos * 3;
   for (h = 0; h < Height; h++) {
     for (w = 0; w < Width; w++) {
-      /* FIXME */
       pel[3 * w + 0] = b;
       pel[3 * w + 1] = g;
       pel[3 * w + 2] = r;
@@ -294,7 +310,7 @@ static int32_t CMN_SetLayer(uint32_t Instance, uint32_t LayerIndex)
 
   assert(ctx);
 
-  ctx->layer = LayerIndex;
+  ctx->layer = (SCRL_Layer) LayerIndex;
 
   return 0;
 }

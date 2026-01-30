@@ -21,10 +21,7 @@
 #include "postprocess_conf.h"
 
 /* Model Related Info */
-#define NN_WIDTH AI_FD_BLAZEFACE_PP_IMG_SIZE
-#define NN_HEIGHT AI_FD_BLAZEFACE_PP_IMG_SIZE
 #define NN_FORMAT DCMIPP_PIXEL_PACKER_FORMAT_RGB888_YUV444_1
-#define NN_BPP 3
 
 /* Display config */
 #if HAS_ROTATION_SUPPORT == 1

@@ -1,3 +1,20 @@
+/**
+ ******************************************************************************
+ * @file    scrl_spi.c
+ * @author  MDG Application Team
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2024 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
+
 #include "scrl.h"
 
 #include <assert.h>
@@ -404,7 +421,7 @@ static int32_t SPI_IO_Delay(uint32_t Delay)
 static void SCRL_Init_spi(struct scrl_spi_ctx *ctx)
 {
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-  ILI9341_InitParams_t ILI9341_InitParams = {0};
+  ILI9341_InitParams_t ILI9341_InitParams;
   GPIO_InitTypeDef gpio_init = {0};
   int ret;
 
@@ -540,11 +557,13 @@ static void SCRL_Init_spi(struct scrl_spi_ctx *ctx)
   ret = ILI9341_RegisterBusIO(&ObjCtx, &IOCtx);
   assert(ret == 0);
 
-  ILI9341_InitParams.Endian         = ILI9341_ENDIAN_LITTLE;
-  ILI9341_InitParams.SwapRB         = 0;
-  ILI9341_InitParams.ColorCoding    = ILI9341_FORMAT_RBG565;
-  ILI9341_InitParams.Orientation    = ILI9341_ORIENTATION_LANDSCAPE;
-  ILI9341_InitParams.TEMode         = ILI9341_TE_DISABLED;
+  ILI9341_InitParams = (ILI9341_InitParams_t) {
+    .Endian         = ILI9341_ENDIAN_LITTLE,
+    .SwapRB         = 0,
+    .ColorCoding    = ILI9341_FORMAT_RBG565,
+    .Orientation    = ILI9341_ORIENTATION_LANDSCAPE,
+    .TEMode         = ILI9341_TE_DISABLED,
+  };
   ret = ILI9341_Init(&ObjCtx, &ILI9341_InitParams);
   assert(ret == 0);
 

@@ -26,7 +26,9 @@
 #include "app_postprocess.h"
 #include "isp_api.h"
 #include "ld.h"
-#include "ll_aton_runtime.h"
+#include "stai.h"
+#include "stai_face_detector.h"
+#include "stai_face_landmark.h"
 #include "cmw_camera.h"
 #include "scrl.h"
 #ifdef STM32N6570_DK_REV
@@ -157,13 +159,13 @@ typedef struct {
 
 typedef struct {
   uint32_t nn_in_len;
-  float *prob_out_0;
+  int8_t *prob_out_0;
   uint32_t prob_out_0_len;
-  float *boxes_out_0;
+  int8_t *boxes_out_0;
   uint32_t boxes_out_0_len;
-  float *prob_out_1;
+  int8_t *prob_out_1;
   uint32_t prob_out_1_len;
-  float *boxes_out_1;
+  int8_t *boxes_out_1;
   uint32_t boxes_out_1_len;
   fd_blazeface_pp_static_param_t static_param;
   fd_pp_out_t fd_out;
@@ -229,14 +231,16 @@ static uint8_t screen_buffer[LCD_BG_WIDTH * LCD_BG_HEIGHT * 2] ALIGN_32 IN_PSRAM
 
 /* model */
  /* face detector */
-LL_ATON_DECLARE_NAMED_NN_INSTANCE_AND_INTERFACE(face_detector);
+__attribute__ ((aligned (32)))
+static uint8_t network_face_detector_ctx[STAI_FACE_DETECTOR_CONTEXT_SIZE];
  /* face landmark */
-LL_ATON_DECLARE_NAMED_NN_INSTANCE_AND_INTERFACE(face_landmark);
+__attribute__ ((aligned (32)))
+static uint8_t network_face_landmark_ctx[STAI_FACE_LANDMARK_CONTEXT_SIZE];
 static uint32_t frame_event_nb;
 static volatile uint32_t frame_event_nb_for_resize;
 
  /* nn input buffers */
-static uint8_t nn_input_buffers[2][NN_WIDTH * NN_HEIGHT * NN_BPP] ALIGN_32;
+static uint8_t nn_input_buffers[2][STAI_FACE_DETECTOR_IN_1_WIDTH * STAI_FACE_DETECTOR_IN_1_HEIGHT * STAI_FACE_DETECTOR_IN_1_CHANNEL] ALIGN_32;
 static bqueue_t nn_input_queue;
 
  /* rtos */
@@ -257,11 +261,11 @@ static StaticSemaphore_t fl_inf_sem_buffer;
 static SemaphoreHandle_t nn_sem;
 static StaticSemaphore_t nn_sem_buffer;
 static fl_inf_info_t fl_inf_info;
-static uint8_t fl_input_buffers[2][(int)LD_WIDTH * (int)LD_HEIGHT * NN_BPP] ALIGN_32;
+static uint8_t fl_input_buffers[2][STAI_FACE_LANDMARK_IN_1_WIDTH * STAI_FACE_LANDMARK_IN_1_HEIGHT * STAI_FACE_DETECTOR_IN_1_CHANNEL] ALIGN_32;
 static bqueue_t fl_input_queue;
 #if HAS_ROTATION_SUPPORT == 0
 /* Software resize buffer */
-static void *pScratch[(int)LD_WIDTH * 2 * sizeof(uint16_t) + (int)LD_WIDTH * 1 * sizeof(float16_t)];
+static void *pScratch[STAI_FACE_LANDMARK_IN_1_WIDTH * 2 * sizeof(uint16_t) + STAI_FACE_LANDMARK_IN_1_WIDTH * 1 * sizeof(float16_t)];
 #else
 static GFXMMU_HandleTypeDef hgfxmmu;
 static nema_cmdlist_t cl;
@@ -785,29 +789,65 @@ static void Display_NetworkOutput(display_info_t *info)
     UTIL_LCDEx_PrintfAt(0, LINE(line_nb),  RIGHT_MODE, "fd : %5.1f %%", info->fd_max_prob * 100);
 }
 
+static void Run_Inference_Face_Detector(stai_network *network_instance) {
+  stai_return_code ret;
+
+  do {
+    ret = stai_face_detector_run(network_instance, STAI_MODE_ASYNC);
+    if (ret == STAI_RUNNING_WFE)
+      LL_ATON_OSAL_WFE();
+  } while (ret == STAI_RUNNING_WFE || ret == STAI_RUNNING_NO_WFE);
+
+  ret = stai_ext_face_detector_new_inference(network_instance);
+  assert(ret == STAI_SUCCESS);
+}
+
+static void Run_Inference_Face_Landmark(stai_network *network_instance) {
+  stai_return_code ret;
+
+  do {
+    ret = stai_face_landmark_run(network_instance, STAI_MODE_ASYNC);
+    if (ret == STAI_RUNNING_WFE)
+      LL_ATON_OSAL_WFE();
+  } while (ret == STAI_RUNNING_WFE || ret == STAI_RUNNING_NO_WFE);
+
+  ret = stai_ext_face_landmark_new_inference(network_instance);
+  assert(ret == STAI_SUCCESS);
+}
+
 static void face_detector_init(fd_model_info_t *info)
 {
-  const LL_Buffer_InfoTypeDef *nn_out_info = LL_ATON_Output_Buffers_Info_face_detector();
-  const LL_Buffer_InfoTypeDef *nn_in_info = LL_ATON_Input_Buffers_Info_face_detector();
+  stai_ptr nn_out[STAI_FACE_DETECTOR_OUT_NUM] = {0};
+  stai_network_info fd_info;
+  stai_size out_num;
   int ret;
 
+  ret = stai_face_detector_init(network_face_detector_ctx);
+  assert(ret == STAI_SUCCESS);
+
   /* model info */
-  info->nn_in_len = LL_Buffer_len(&nn_in_info[0]);
-  info->prob_out_0 = (float *) LL_Buffer_addr_start(&nn_out_info[1]);
-  info->prob_out_0_len = LL_Buffer_len(&nn_out_info[1]);
+  info->nn_in_len = STAI_FACE_DETECTOR_IN_1_SIZE_BYTES;
+
+  info->prob_out_0_len = STAI_FACE_DETECTOR_OUT_2_SIZE_BYTES;
   assert(info->prob_out_0_len == AI_FD_BLAZEFACE_PP_OUT_0_NB_BOXES * sizeof(int8_t));
-  info->boxes_out_0 = (float *) LL_Buffer_addr_start(&nn_out_info[0]);
-  info->boxes_out_0_len = LL_Buffer_len(&nn_out_info[0]);
+  info->boxes_out_0_len = STAI_FACE_DETECTOR_OUT_1_SIZE_BYTES;
   assert(info->boxes_out_0_len == AI_FD_BLAZEFACE_PP_OUT_0_NB_BOXES * sizeof(int8_t) * 16);
-  info->prob_out_1 = (float *) LL_Buffer_addr_start(&nn_out_info[2]);
-  info->prob_out_1_len = LL_Buffer_len(&nn_out_info[2]);
+  info->prob_out_1_len = STAI_FACE_DETECTOR_OUT_3_SIZE_BYTES;
   assert(info->prob_out_1_len == AI_FD_BLAZEFACE_PP_OUT_1_NB_BOXES * sizeof(int8_t));
-  info->boxes_out_1 = (float *) LL_Buffer_addr_start(&nn_out_info[3]);
-  info->boxes_out_1_len = LL_Buffer_len(&nn_out_info[3]);
+  info->boxes_out_1_len = STAI_FACE_DETECTOR_OUT_4_SIZE_BYTES;
   assert(info->boxes_out_1_len == AI_FD_BLAZEFACE_PP_OUT_1_NB_BOXES * sizeof(int8_t) * 16);
+  ret = stai_face_detector_get_outputs(network_face_detector_ctx, nn_out, &out_num);
+  assert(ret == STAI_SUCCESS);
+
+  info->boxes_out_0 = (int8_t *)nn_out[0];
+  info->prob_out_0 = (int8_t *)nn_out[1];
+  info->prob_out_1 = (int8_t *)nn_out[2];
+  info->boxes_out_1 = (int8_t *)nn_out[3];
 
   /* post processor info */
-  ret = app_postprocess_init(&info->static_param, &NN_Instance_face_detector);
+  ret = stai_face_detector_get_info(network_face_detector_ctx, &fd_info);
+  assert(ret == STAI_SUCCESS);
+  ret = app_postprocess_init(&info->static_param, &fd_info);
   assert(ret == AI_FD_PP_ERROR_NO);
 }
 
@@ -820,10 +860,10 @@ static int face_detector_run(uint8_t *buffer, fd_model_info_t *info, uint32_t *f
 
   start_ts = HAL_GetTick();
   /* Note that we don't need to clean/invalidate those input buffers since they are only accessed in hardware */
-  ret = LL_ATON_Set_User_Input_Buffer_face_detector(0, buffer, info->nn_in_len);
-  assert(ret == LL_ATON_User_IO_NOERROR);
+  ret = stai_face_detector_set_inputs(network_face_detector_ctx, &buffer, STAI_FACE_DETECTOR_IN_NUM);
+  assert(ret == STAI_SUCCESS);
 
-  LL_ATON_RT_Main(&NN_Instance_face_detector);
+  Run_Inference_Face_Detector(network_face_detector_ctx);
 
   ret = app_postprocess_run((void * []){info->boxes_out_0, info->prob_out_0, info->prob_out_1, info->boxes_out_1}, 4, &info->fd_out, &info->static_param);
   assert(ret == AI_FD_PP_ERROR_NO);
@@ -851,13 +891,22 @@ static int face_detector_run(uint8_t *buffer, fd_model_info_t *info, uint32_t *f
 
 static void face_landmark_init(fl_model_info_t *info)
 {
-  const LL_Buffer_InfoTypeDef *nn_out_info = LL_ATON_Output_Buffers_Info_face_landmark();
-  const LL_Buffer_InfoTypeDef *nn_in_info = LL_ATON_Input_Buffers_Info_face_landmark();
+  stai_ptr outputs[STAI_FACE_LANDMARK_OUT_NUM] = {0};
+  stai_size out_num;
+  int ret;
 
-  info->nn_in_len = LL_Buffer_len(&nn_in_info[0]);
-  info->landmarks_out = (float *) LL_Buffer_addr_start(&nn_out_info[0]);
-  info->landmarks_out_len = LL_Buffer_len(&nn_out_info[0]);
+  ret = stai_face_landmark_init(network_face_landmark_ctx);
+  assert(ret == STAI_SUCCESS);
+
+  /* model info */
+  info->nn_in_len = STAI_FACE_LANDMARK_IN_1_SIZE_BYTES;
+
+  info->landmarks_out_len = STAI_FACE_LANDMARK_OUT_1_SIZE_BYTES;
   assert(info->landmarks_out_len == sizeof(float) * 2 * LD_LANDMARK_NB);
+  ret = stai_face_landmark_get_outputs(network_face_landmark_ctx, outputs, &out_num);
+  assert(ret == STAI_SUCCESS);
+
+  info->landmarks_out = (float *)outputs[0];
 }
 
 #if HAS_ROTATION_SUPPORT == 0
@@ -887,7 +936,7 @@ static int face_landmark_prepare_input(uint8_t *buffer, roi_t *roi, uint8_t *nn_
     int offset_y;
 
     /* clear target memory since resize will partially write it */
-    memset(nn_in, 0, (int)LD_WIDTH * (int)LD_HEIGHT * NN_BPP);
+    memset(nn_in, 0, (int)LD_WIDTH * (int)LD_HEIGHT * STAI_FACE_DETECTOR_IN_1_CHANNEL);
 
     /* compute start address of output buffer */
     if (corners[0][0] == (int)corners_f[0][0])
@@ -930,7 +979,7 @@ static int face_landmark_prepare_input(uint8_t *buffer, roi_t *roi, uint8_t *nn_
       out_data_end = out_data + (int)LD_WIDTH * DISPLAY_BPP * (height_out - 1) + DISPLAY_BPP * width_out - 1;
 
       assert(out_data_end >= nn_in);
-      assert(out_data_end < nn_in + (int)LD_WIDTH * (int)LD_HEIGHT * NN_BPP);
+      assert(out_data_end < nn_in + (int)LD_WIDTH * (int)LD_HEIGHT * STAI_FACE_DETECTOR_IN_1_CHANNEL);
     }
   }
 
@@ -1039,10 +1088,11 @@ static int face_landmark_run(uint8_t *buffer, fl_inf_info_t *fl_inf_info, int th
 
   ret = xSemaphoreTake(fl_inf_info->aton_lock, portMAX_DELAY);
   assert(ret == pdTRUE);
-  ret = LL_ATON_Set_User_Input_Buffer_face_landmark(0, fl_in, info->nn_in_len);
-  assert(ret == LL_ATON_User_IO_NOERROR);
+
+  ret = stai_face_landmark_set_inputs(network_face_landmark_ctx, &fl_in, STAI_FACE_LANDMARK_IN_NUM);
+  assert(ret == STAI_SUCCESS);
   fl_ms = HAL_GetTick();
-  LL_ATON_RT_Main(&NN_Instance_face_landmark);
+  Run_Inference_Face_Landmark(network_face_landmark_ctx);
   fl_ms = HAL_GetTick() - fl_ms;
   bqueue_put_free(&fl_input_queue);
 
@@ -1133,6 +1183,8 @@ static void nn_thread_fct(void *arg)
   int j;
 
   /* setup models buffer info */
+  ret = stai_runtime_init();
+  assert(ret == STAI_SUCCESS);
   face_detector_init(&fd_info);
   ret = xSemaphoreTake(fl_inf_info.lock, portMAX_DELAY);
   assert(ret == pdTRUE);
@@ -1151,7 +1203,7 @@ static void nn_thread_fct(void *arg)
   CAM_NNPipe_Start(nn_pipe_dst, CMW_MODE_CONTINUOUS);
   while (1)
   {
-    uint8_t *capture_buffer;
+    stai_ptr capture_buffer;
 
     nn_period[0] = nn_period[1];
     nn_period[1] = HAL_GetTick();

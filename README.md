@@ -53,7 +53,8 @@ Supported camera modules:
 
 - Provided IMX335 camera module
 - [STEVAL-55G1MBI](https://www.st.com/en/evaluation-tools/steval-55g1mbi.html)
-- [STEVAL-66GYMAI1](https://www.st.com/en/evaluation-tools/steval-66gymai.html)
+- [STEVAL-66GYMAI](https://www.st.com/en/evaluation-tools/steval-66gymai.html)
+- [STEVAL-1943-MC1](https://www.st.com/en/evaluation-tools/steval-1943-mc1.html)
 
 For the Nucleo board, one of the following displays is required:
 
@@ -74,7 +75,7 @@ NUCLEO-N657X0-Q board with SPI display.
 - IAR Embedded Workbench for Arm (**EWARM 9.40.1**) + N6 patch ([**EWARMv9_STM32N6xx_V1.0.0**](STM32Cube_FW_N6/Utilities/PC_Software/EWARMv9_STM32N6xx_V1.0.0.zip))
 - [STM32CubeIDE](https://www.st.com/content/st_com/en/products/development-tools/software-development-tools/stm32-software-development-tools/stm32-ides/stm32cubeide.html) (__v1.17.0__)
 - [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html) (__v2.18.0__)
-- [STEdgeAI](https://www.st.com/en/development-tools/stedgeai-core.html) (__v2.2.0__)
+- [STEdgeAI](https://www.st.com/en/development-tools/stedgeai-core.html) (__v3.0.0__)
 
 ---
 
@@ -104,52 +105,39 @@ You can see application messages by attaching a console application to the ST-Li
 
 ## Quickstart using Prebuilt Binaries
 
+The prebuilt binaries are an assembly of several binaries:
+  - FSBL (First Stage Boot Loader, loading the application from flash to RAM)
+  - The application
+  - The weights of the neural network models
+
 ### STM32N6570-DK
 
 To program the board's external flash, follow these steps:
 
 1. Set the board to [development mode](#boot-modes).
-2. Program `Binary/ai_fsbl.hex` (First Stage Boot Loader).
-3. Program `Binary/face_detector_data.hex` (parameters of the face detector model).
-4. Program `Binary/face_landmark_data.hex` (parameters of the face landmarks model).
-5. Program `Binary/x-cube-n6-ai-face-landmarks-dk.hex` (firmware application).
-6. Set the board to [boot from flash mode](#boot-modes).
-7. Power cycle the board.
+2. Program `Binary/STM32N6570-DK/x-cube-n6-ai-face-landmarks-dk.hex`.
+3. Set the board to [boot from flash mode](#boot-modes).
+4. Power cycle the board.
 
-__Note__: The `Binary/x-cube-n6-ai-face-landmarks-dk.hex` firmware is built for MB1939 STM32N6570-DK REV C02 with any of the listed camera modules.
-
-### NUCLEO-N657X0-Q
-
-#### USB/UVC Display
+### NUCLEO-N657X0-Q USB/UVC
 
 To program the board's external flash, follow these steps:
 
 1. Set the board to [development mode](#boot-modes).
-2. Program `Binary/ai_fsbl.hex` (First Stage Boot Loader).
-3. Program `Binary/face_detector_data.hex` (parameters of the face detector model).
-4. Program `Binary/face_landmark_data.hex` (parameters of the face landmarks model).
-5. Program `Binary/x-cube-n6-ai-face-landmarks-nucleo-uvc.hex` (firmware application).
-6. Set the board to [boot from flash mode](#boot-modes).
-7. Connect a USB cable to the USB OTG port (CN8), next to the RJ45 port. Connect the other end to a USB host (PC, USB hub, etc.) for data transmission via USB/UVC.
-8. Power cycle the board.
-9. Start the camera application on the host. On Windows, search for "camera" in the Start menu.
+2. Program `Binary/NUCLEO-N657X0-Q/USB-UVC-Display/x-cube-n6-ai-face-landmarks-nucleo-uvc.hex`.
+3. Set the board to [boot from flash mode](#boot-modes).
+4. Connect a USB cable to the USB OTG port (CN8), next to the RJ45 port. Connect the other end to a USB host (PC, USB hub, etc.) for data transmission via USB/UVC.
+5. Power cycle the board.
+6. Start the camera application on the host. On Windows, search for "camera" in the Start menu.
 
-__Note__: The `Binary/x-cube-n6-ai-face-landmarks-nucleo-uvc.hex` firmware is built for MB1940 NUCLEO-N657X0-Q REV C01 with USB/UVC host display and any of the listed camera modules.
-
-#### SPI Display
+### NUCLEO-N657X0-Q SPI
 
 To program the board's external flash, follow these steps:
 
 1. Set the board to [development mode](#boot-modes).
-2. Program `Binary/ai_fsbl.hex` (First Stage Boot Loader).
-3. Program `Binary/face_detector_data.hex` (parameters of the face detector model).
-4. Program `Binary/face_landmark_data.hex` (parameters of the face landmarks model).
-5. Program `Binary/x-cube-n6-ai-face-landmarks-nucleo-spi.hex` (firmware application).
-6. Set the board to [boot from flash mode](#boot-modes).
-7. Put the X-NUCLEO-GFX01M2 shield on top of the NUCLEO-N657X0-Q board.
-8. Power cycle the board.
-
-__Note__: The `Binary/x-cube-n6-ai-face-landmarks-nucleo-spi.hex` firmware is built for MB1940 NUCLEO-N657X0-Q REV C01 with X-NUCLEO-GFX01M2 SPI display and any of the listed camera modules.
+2. Program `Binary/NUCLEO-N657X0-Q/SPI-Display/x-cube-n6-ai-face-landmarks-nucleo-spi.hex`.
+3. Set the board to [boot from flash mode](#boot-modes).
+4. Power cycle the board.
 
 ---
 
@@ -166,15 +154,8 @@ Ensure the STM32CubeProgrammer `bin` folder is in your PATH.
 ```bash
 export DKEL="<STM32CubeProgrammer_N6 Install Folder>/bin/ExternalLoader/MX66UW1G45G_STM32N6570-DK.stldr"
 
-# First Stage Boot Loader
-STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $DKEL -hardRst -w Binary/ai_fsbl.hex
-
-# Network parameters and biases
-STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $DKEL -hardRst -w Binary/face_detector_data.hex
-STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $DKEL -hardRst -w Binary/face_landmark_data.hex
-
 # Application Firmware
-STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $DKEL -hardRst -w Binary/x-cube-n6-ai-face-landmarks-dk.hex
+STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $DKEL -hardRst -w Binary/STM32N6570-DK/x-cube-n6-ai-face-landmarks-dk.hex
 ```
 
 ---
@@ -186,25 +167,17 @@ Ensure the STM32CubeProgrammer `bin` folder is in your PATH.
 ```bash
 export NUEL="<STM32CubeProgrammer_N6 Install Folder>/bin/ExternalLoader/MX25UM51245G_STM32N6570-NUCLEO.stldr"
 
-# First Stage Boot Loader
-STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $NUEL -hardRst -w Binary/ai_fsbl.hex
-
-# Network parameters and biases
-STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $NUEL -hardRst -w Binary/face_detector_data.hex
-STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $NUEL -hardRst -w Binary/face_landmark_data.hex
-
-# Application Firmware
 # USB/UVC display
-STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $NUEL -hardRst -w Binary/x-cube-n6-ai-face-landmarks-nucleo-uvc.hex
+STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $NUEL -hardRst -w Binary/NUCLEO-N657X0-Q/USB-UVC-Display/x-cube-n6-ai-face-landmarks-nucleo-uvc.hex
 # SPI display
-STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $NUEL -hardRst -w Binary/x-cube-n6-ai-face-landmarks-nucleo-spi.hex
+STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $NUEL -hardRst -w Binary/NUCLEO-N657X0-Q/SPI-Display/x-cube-n6-ai-face-landmarks-nucleo-spi.hex
 ```
 
 ---
 
 ## Quickstart using Source Code
 
-Before building and running the application, you must program `face_detector_data.hex` and `face_landmark_data.hex` (model weights and biases). This only needs to be done once unless you change the AI model. See [Quickstart using prebuilt binaries](#quickstart-using-prebuilt-binaries) for details.
+Before building and running the application, you must program `Model/face_detector_data.hex` and `Model/face_landmark_data.hex` (models weights and biases). This only needs to be done once unless you change the AI model. See [Quickstart using prebuilt binaries](#quickstart-using-prebuilt-binaries) for details.
 
 For more information about boot modes, see [Boot Overview](Doc/Boot-Overview.md).
 
@@ -279,15 +252,22 @@ After building the application, you must add a signature to the binary file:
 STM32_SigningTool_CLI -bin build/Project.bin -nk -t ssbl -hv 2.3 -o build/Project_sign.bin
 ```
 
-Program the signed binary at address `0x70100000`.
+Program the signed binary at address `0x70100000`, as well as the FSBL and network parameters.
 
 On STM32N6570-DK:
 
 ```bash
 export DKEL="<STM32CubeProgrammer_N6 Install Folder>/bin/ExternalLoader/MX66UW1G45G_STM32N6570-DK.stldr"
 
+# First Stage Boot Loader
+STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $DKEL -hardRst -w FSBL/ai_fsbl.hex
+
 # Adjust build path as needed
 STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $DKEL -hardRst -w build/Project_sign.bin 0x70100000
+
+# Network parameters and biases
+STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $DKEL -hardRst -w Model/face_detector_data.hex
+STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $DKEL -hardRst -w Model/face_landmark_data.hex
 ```
 
 On NUCLEO-N657X0-Q:
@@ -295,10 +275,28 @@ On NUCLEO-N657X0-Q:
 ```bash
 export NUEL="<STM32CubeProgrammer_N6 Install Folder>/bin/ExternalLoader/MX25UM51245G_STM32N6570-NUCLEO.stldr"
 
+# First Stage Boot Loader
+STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $NUEL -hardRst -w FSBL/ai_fsbl.hex
+
 # Adjust build path as needed
 STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $NUEL -hardRst -w build/Project_sign.bin 0x70100000
+
+# Network parameters and biases
+STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $NUEL -hardRst -w Model/face_detector_data.hex
+STM32_Programmer_CLI -c port=SWD mode=HOTPLUG -el $NUEL -hardRst -w Model/face_landmark_data.hex
 ```
 
 __Note__: Only the application binary needs to be programmed if `fsbl` and networks data have already been programmed.
 
 Set your board to [boot from flash](#boot-from-flash) mode and power cycle to boot from external flash.
+
+---
+
+## How to update my project with a new version of ST Edge AI
+
+The neural network models files (`face_detector.c`, `stai_face_detector.c/h`, etc.) included in this project were generated using [STEdgeAI](https://www.st.com/en/development-tools/stedgeai-core.html) version 3.0.0.
+
+Using a different version of STEdgeAI to generate these models files may result in the following compile-time error:  
+`Possible mismatch in ll_aton library used`.
+
+If you encounter this error, please follow the STEdgeAI instructions on [How to update my project with a new version of ST Edge AI Core](https://stedgeai-dc.st.com/assets/embedded-docs/stneuralart_faqs_update_version.html) to update your project.

@@ -21,6 +21,7 @@
 #include "app_cam.h"
 #include "app_config.h"
 #include "utils.h"
+#include "stai_face_detector.h"
 
 /* Keep display output aspect ratio using crop area */
 static void CAM_InitCropConfig(CMW_Manual_roi_area_t *roi, int sensor_width, int sensor_height)
@@ -67,10 +68,10 @@ static void DCMIPP_PipeInitNn(int sensor_width, int sensor_height)
 
   assert(LCD_BG_HEIGHT <= LCD_BG_WIDTH);
   /* Keep screen aspect ratio. Consequence is that bottom of face detector input will be black */
-  dcmipp_conf.output_width = NN_WIDTH;
-  dcmipp_conf.output_height = (int) (NN_HEIGHT * ((float)LCD_BG_HEIGHT / LCD_BG_WIDTH));
+  dcmipp_conf.output_width = STAI_FACE_DETECTOR_IN_1_WIDTH;
+  dcmipp_conf.output_height = (int) (STAI_FACE_DETECTOR_IN_1_HEIGHT * ((float)LCD_BG_HEIGHT / LCD_BG_WIDTH));
   dcmipp_conf.output_format = NN_FORMAT;
-  dcmipp_conf.output_bpp = NN_BPP;
+  dcmipp_conf.output_bpp = STAI_FACE_DETECTOR_IN_1_CHANNEL;
   dcmipp_conf.mode = CMW_Aspect_ratio_manual_roi;
   dcmipp_conf.enable_swap = 1;
   dcmipp_conf.enable_gamma_conversion = 0;
@@ -118,7 +119,7 @@ static void DCMIPP_ReduceSpurious(DCMIPP_HandleTypeDef *hdcmipp)
 
 void CAM_Init(void)
 {
-  CMW_Sensor_Config_t sensor_config;
+  CMW_Advanced_Config_t sensor_config;
   CMW_CameraInit_t cam_conf;
   CMW_Sensor_Name_t sensor;
   int ret;
@@ -133,14 +134,12 @@ void CAM_Init(void)
   sensor_config.selected_sensor = CMW_VD66GY_Sensor;
   ret = CMW_CAMERA_SetDefaultSensorValues(&sensor_config);
   assert(ret == CMW_ERROR_NONE);
-  sensor_config.config.vd66gy_config.line_len = 2000;
+  sensor_config.config_sensor.vd66gy_config.line_len = 2000;
 
   /* Let sensor driver choose which width/height to use */
   cam_conf.width = 0;
   cam_conf.height = 0;
   cam_conf.fps = CAMERA_FPS;
-  cam_conf.pixel_format = 0; /* Default; Not implemented yet */
-  cam_conf.anti_flicker = 0;
   cam_conf.mirror_flip = CAMERA_FLIP;
   ret = CMW_CAMERA_Init(&cam_conf, sensor == CMW_VD66GY_Sensor ? &sensor_config : NULL);
   assert(ret == CMW_ERROR_NONE);
@@ -174,4 +173,9 @@ void CAM_IspUpdate(void)
 
   ret = CMW_CAMERA_Run();
   assert(ret == CMW_ERROR_NONE);
+}
+
+void CMW_CAMERA_PIPE_ErrorCallback(uint32_t pipe)
+{
+  /* FIXME : Need to tune sensor/ipplug so we can remove this implementation */
 }

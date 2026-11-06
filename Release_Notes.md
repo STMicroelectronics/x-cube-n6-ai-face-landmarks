@@ -48,6 +48,10 @@ The use case chosen is multi-faces landmark detection. It is made up of two mode
 
 ## Update history
 
+### v1.1.1 / September 2026
+
+- Fix STM32_SigningTool_CLI API break since v2.21 by adding `--align` flag
+
 ### v1.1.0 / January 2026
 
 - Update Cube FW to v1.3.0
